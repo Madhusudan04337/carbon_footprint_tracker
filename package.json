@@ -1,0 +1,21 @@
+{
+  "name": "eco-trace-platform",
+  "version": "1.0.0",
+  "description": "Carbon Footprint Awareness Platform monorepo",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:frontend": "npm run dev --workspace=apps/frontend",
+    "dev:tracker": "npm run dev --workspace=apps/backend-tracker",
+    "build": "npm run build --workspaces --if-present",
+    "test": "npm test --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present"
+  },
+  "devDependencies": {
+    "eslint": "^9.0.0",
+    "typescript": "^5.0.0"
+  }
+}
