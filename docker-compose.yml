@@ -1,0 +1,153 @@
+# =============================================================================
+# docker-compose.yml — LOCAL DEVELOPMENT
+# =============================================================================
+# Purpose: Fast inner-loop development with hot reload
+#
+# Services:
+#   postgres  — PostgreSQL 16 database with a named volume for persistence
+#   api       — FastAPI backend with uvicorn --reload (hot reload on code change)
+#   frontend  — Vite dev server with HMR (Hot Module Replacement)
+#
+# Usage:
+#   cp .env.example .env          # fill in your secrets
+#   docker compose up -d          # start all services
+#   docker compose logs -f api    # tail backend logs
+#   docker compose down -v        # stop + wipe volumes
+# =============================================================================
+
+services:
+
+  # ── PostgreSQL Database ────────────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    # alpine variant is ~80 MB vs ~400 MB for the default image
+    container_name: ecotrace-postgres-dev
+
+    environment:
+      # These must match DATABASE_URL in the api service
+      POSTGRES_USER: ${POSTGRES_USER:-ecotrace_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ecotrace_pass}
+      POSTGRES_DB: ${POSTGRES_DB:-ecotrace_db}
+
+    ports:
+      # Exposes port 5432 to the host so you can connect with pgAdmin / DBeaver
+      - "5432:5432"
+
+    volumes:
+      # Named volume persists data between `docker compose down` (without -v)
+      - postgres_dev_data:/var/lib/postgresql/data
+      # Init script creates extensions on first boot
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/01_init.sql:ro
+
+    healthcheck:
+      # pg_isready checks if PostgreSQL accepts connections on the correct db
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-ecotrace_user} -d ${POSTGRES_DB:-ecotrace_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+    restart: unless-stopped
+
+    networks:
+      - ecotrace-net
+
+
+  # ── FastAPI Backend (Development — hot reload) ─────────────────────────────
+  api:
+    build:
+      context: ./apps/backend-api
+      dockerfile: Dockerfile
+      # Use the builder stage only — includes all dev tooling and avoids
+      # gunicorn (we override CMD below with uvicorn --reload)
+      target: builder
+
+    container_name: ecotrace-api-dev
+    
+    # Override the production CMD with uvicorn reload for development
+    command: >
+      sh -c "pip install --quiet --no-cache-dir -r requirements.txt &&
+             uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+
+    environment:
+      PROJECT_NAME: ${PROJECT_NAME:-EcoTrace Carbon Footprint API}
+      ENVIRONMENT: development
+      PORT: 8000
+      DATABASE_URL: postgresql://${POSTGRES_USER:-ecotrace_user}:${POSTGRES_PASSWORD:-ecotrace_pass}@postgres:5432/${POSTGRES_DB:-ecotrace_db}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-dev_secret_not_for_production}
+      JWT_ALGORITHM: ${JWT_ALGORITHM:-HS256}
+      ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES:-60}
+      ALLOWED_ORIGINS: "http://localhost:5173,http://localhost:8080,http://frontend:8080"
+      LOG_LEVEL: debug
+
+    ports:
+      - "8000:8000"
+
+    volumes:
+      # Bind-mount source code so uvicorn --reload sees file changes instantly
+      - ./apps/backend-api/app:/app/app:ro
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+        # Only start after PostgreSQL passes its health check
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+    restart: unless-stopped
+
+    networks:
+      - ecotrace-net
+
+
+  # ── React/Vite Frontend (Development — HMR) ────────────────────────────────
+  frontend:
+    image: node:20-alpine
+    container_name: ecotrace-frontend-dev
+    working_dir: /app
+
+    command: >
+      sh -c "npm ci --workspace=apps/frontend-spa --include-workspace-root --silent &&
+             npm run dev:spa -- --host 0.0.0.0"
+
+    environment:
+      # Build-time variable passed to Vite dev server
+      VITE_API_BASE_URL: http://localhost:8000/api
+
+    ports:
+      # 5173 is Vite's default dev port
+      - "5173:5173"
+
+    volumes:
+      # Mount entire monorepo so shared packages resolve correctly
+      - .:/app
+      # Anonymous volume prevents host node_modules from overwriting container's
+      - /app/node_modules
+      - /app/apps/frontend-spa/node_modules
+
+    depends_on:
+      - api
+
+    restart: unless-stopped
+
+    networks:
+      - ecotrace-net
+
+
+# ── Named Volumes ─────────────────────────────────────────────────────────────
+volumes:
+  postgres_dev_data:
+    driver: local
+    # Persists PostgreSQL data between container restarts
+
+# ── Networks ──────────────────────────────────────────────────────────────────
+networks:
+  ecotrace-net:
+    driver: bridge
+    # Isolated bridge network — services resolve each other by container name
+    # e.g. the api reaches postgres at hostname "postgres:5432"

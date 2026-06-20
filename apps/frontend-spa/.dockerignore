@@ -1,0 +1,35 @@
+# =============================================================================
+# Frontend .dockerignore
+# =============================================================================
+
+# Node modules — installed fresh inside the container
+node_modules/
+*/node_modules/
+
+# Dev server output (Vite build goes to dist/, which is created inside container)
+dist/
+
+# Local env files
+.env
+.env.*
+!.env.example
+
+# Test artifacts
+coverage/
+*.test.*
+__tests__/
+jest.config.*
+
+# IDE and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Git history
+.git/
+.gitignore
+
+# Docker files themselves
+Dockerfile*
+.dockerignore

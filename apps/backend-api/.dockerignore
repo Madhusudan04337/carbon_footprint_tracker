@@ -1,0 +1,55 @@
+# =============================================================================
+# Backend .dockerignore — prevents unnecessary files being sent to Docker daemon
+# Keeps the build context small and prevents secrets from leaking into images
+# =============================================================================
+
+# Python runtime artifacts (recreated inside container)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pyc
+.Python
+
+# Virtual environments — never copy the local venv; pip installs fresh inside
+venv/
+.venv/
+env/
+ENV/
+
+# Test artifacts — tests don't run in production image
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+*.egg-info/
+tests/
+
+# Local environment files — secrets must come via docker secrets / env_file
+.env
+.env.*
+!.env.example
+
+# Local database — production uses PostgreSQL via DATABASE_URL
+*.db
+*.sqlite3
+
+# IDE and OS files
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Git history — not needed inside the image
+.git/
+.gitignore
+
+# Docker files themselves (avoid recursive context)
+Dockerfile*
+docker-compose*
+.dockerignore
+
+# Seed and dev scripts
+seed_data.py

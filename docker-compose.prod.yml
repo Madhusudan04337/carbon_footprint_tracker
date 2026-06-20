@@ -1,0 +1,179 @@
+# =============================================================================
+# docker-compose.prod.yml — PRODUCTION TESTING
+# =============================================================================
+# Purpose: Test the production image locally before deploying to a server.
+#          Uses the full production images (gunicorn + nginx) instead of dev servers.
+#
+# Differences from docker-compose.yml:
+#   • api:      uses the `runtime` target with gunicorn (multi-worker)
+#   • frontend: uses the nginx stage (pre-built static bundle, ~10 MB image)
+#   • postgres: no host-port exposure (internal only)
+#   • No source code bind-mounts (immutable images, just like real production)
+#   • Resource limits set on all containers
+#   • Separate named volumes for production data
+#
+# Usage:
+#   cp .env.example .env          # set REAL secrets
+#   docker compose -f docker-compose.prod.yml build
+#   docker compose -f docker-compose.prod.yml up -d
+#   docker compose -f docker-compose.prod.yml logs -f
+# =============================================================================
+
+services:
+
+  # ── PostgreSQL Database ────────────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: ecotrace-postgres-prod
+
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      # Disable the default postgres superuser password for extra safety
+      POSTGRES_HOST_AUTH_METHOD: scram-sha-256
+      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
+
+    # No host port mapping in production — DB is internal-only
+    expose:
+      - "5432"
+
+    volumes:
+      - postgres_prod_data:/var/lib/postgresql/data
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/01_init.sql:ro
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+    # Resource limits prevent a runaway DB from starving other containers
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+        reservations:
+          cpus: "0.25"
+          memory: 128M
+
+    restart: unless-stopped
+    networks:
+      - ecotrace-prod-net
+
+
+  # ── FastAPI Backend (Production — gunicorn + uvicorn workers) ─────────────
+  api:
+    build:
+      context: ./apps/backend-api
+      dockerfile: Dockerfile
+      # Build the full production image (runtime stage with gunicorn)
+      target: runtime
+
+    container_name: ecotrace-api-prod
+    image: ecotrace/api:latest
+
+    # scripts/start.sh handles gunicorn invocation
+    # No command override — uses Dockerfile CMD
+
+    env_file:
+      # Reads .env from the project root at runtime (never baked into image)
+      - .env
+
+    environment:
+      # Override/ensure these are production values regardless of .env
+      ENVIRONMENT: production
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+
+    expose:
+      - "8000"
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+        reservations:
+          cpus: "0.25"
+          memory: 128M
+
+    # Production logging: JSON format is easily ingested by CloudWatch/Loki/Datadog
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    restart: unless-stopped
+    networks:
+      - ecotrace-prod-net
+
+
+  # ── React Frontend (Production — nginx serving pre-built static files) ────
+  frontend:
+    build:
+      context: .
+      dockerfile: apps/frontend-spa/Dockerfile
+      # Pass the real API URL at image build time
+      # The browser must reach this URL — use your public domain in CI/CD
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:8000/api}
+
+    container_name: ecotrace-frontend-prod
+    image: ecotrace/frontend:latest
+
+    ports:
+      # Map nginx's non-root port 8080 → host port 80
+      # In front of a reverse proxy (Traefik/nginx), point proxy → container:8080
+      - "80:8080"
+
+    depends_on:
+      api:
+        condition: service_healthy
+
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 128M
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    restart: unless-stopped
+    networks:
+      - ecotrace-prod-net
+
+
+# ── Named Volumes ─────────────────────────────────────────────────────────────
+volumes:
+  postgres_prod_data:
+    driver: local
+
+# ── Networks ──────────────────────────────────────────────────────────────────
+networks:
+  ecotrace-prod-net:
+    driver: bridge
