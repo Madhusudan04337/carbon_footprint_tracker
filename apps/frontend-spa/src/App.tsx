@@ -4,6 +4,7 @@ import Dashboard from './pages/Dashboard.tsx';
 import Calculator from './pages/Calculator.tsx';
 import Goals from './pages/Goals.tsx';
 import Recommendations from './pages/Recommendations.tsx';
+import Analytics from './pages/Analytics.tsx';
 
 export default function App() {
   const location = useLocation();
@@ -40,6 +41,14 @@ export default function App() {
               }`}
             >
               📊 Dashboard
+            </Link>
+            <Link 
+              to="/analytics" 
+              className={`p-3 rounded-xl text-sm font-medium transition-colors flex items-center gap-3 ${
+                isActive('/analytics') ? 'bg-emerald-500 text-white' : 'hover:bg-emerald-500/10'
+              }`}
+            >
+              📈 Analytics
             </Link>
             <Link 
               to="/calculator" 
@@ -90,6 +99,7 @@ export default function App() {
         <main className="flex-1 p-8 overflow-y-auto">
           <Routes>
             <Route path="/" element={<Dashboard />} />
+            <Route path="/analytics" element={<Analytics />} />
             <Route path="/calculator" element={<Calculator />} />
             <Route path="/goals" element={<Goals />} />
             <Route path="/recommendations" element={<Recommendations />} />
