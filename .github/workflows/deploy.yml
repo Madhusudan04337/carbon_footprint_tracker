@@ -1,0 +1,369 @@
+# =============================================================================
+# .github/workflows/deploy.yml — GitHub Actions CI/CD Pipeline
+# =============================================================================
+# Triggers:
+#   • Push to `main` → full test + build + deploy (backend + frontend)
+#   • Push to `staging` → deploy to staging environment
+#   • Pull Request → test + build only (no deploy)
+#   • Manual dispatch → deploy specific service
+#
+# Authentication:
+#   Uses Workload Identity Federation — NO long-lived service account keys.
+#   GCP authenticates GitHub Actions via OIDC token bound to this repository.
+#
+# Required GitHub Secrets (Settings → Secrets → Actions):
+#   GCP_PROJECT_ID              : your GCP project ID
+#   GCP_REGION                  : e.g. asia-south1
+#   WORKLOAD_IDENTITY_PROVIDER  : full WIF provider resource name
+#   CLOUDBUILD_SA_EMAIL         : Cloud Build service account email
+#   CLOUDSQL_INSTANCE           : full Cloud SQL connection name
+# =============================================================================
+
+name: EcoTrace CI/CD — Cloud Run Deploy
+
+on:
+  push:
+    branches:
+      - main
+      - staging
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      service:
+        description: "Service to deploy"
+        required: true
+        default: "both"
+        type: choice
+        options: [both, backend, frontend]
+      environment:
+        description: "Target environment"
+        required: true
+        default: "production"
+        type: choice
+        options: [production, staging]
+
+# Cancel in-progress runs of the same workflow on the same branch.
+# Prevents old deploys from overwriting a newer one.
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Derived values used across all jobs
+  AR_REPO: ecotrace-repo
+  BACKEND_SERVICE: ecotrace-api
+  FRONTEND_SERVICE: ecotrace-frontend
+
+jobs:
+
+  # ════════════════════════════════════════════════════════════════════════════
+  # JOB 1 — Test & Lint
+  # Runs on every push and PR. Blocks deploy if tests fail.
+  # ════════════════════════════════════════════════════════════════════════════
+  test:
+    name: "🧪 Test & Lint"
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # ── Backend tests ───────────────────────────────────────────────────────
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: apps/backend-api/requirements.txt
+
+      - name: Install backend dependencies
+        working-directory: apps/backend-api
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run backend tests
+        working-directory: apps/backend-api
+        run: pytest app/tests/ -v --tb=short
+        env:
+          # Use SQLite for testing — no PostgreSQL needed in CI
+          DATABASE_URL: sqlite:///./test.db
+          JWT_SECRET_KEY: ci_test_secret_not_real
+          ENVIRONMENT: testing
+
+      # ── Frontend tests ──────────────────────────────────────────────────────
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: TypeScript type check
+        working-directory: apps/frontend-spa
+        run: npx tsc --noEmit
+
+  # ════════════════════════════════════════════════════════════════════════════
+  # JOB 2 — Build & Push Docker Images
+  # Runs only on pushes to main/staging (not PRs).
+  # ════════════════════════════════════════════════════════════════════════════
+  build:
+    name: "🐳 Build & Push Images"
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.event_name != 'pull_request'
+    timeout-minutes: 30
+
+    outputs:
+      backend_image:  ${{ steps.meta-backend.outputs.image }}
+      frontend_image: ${{ steps.meta-frontend.outputs.image }}
+      image_tag:      ${{ steps.tag.outputs.tag }}
+
+    permissions:
+      contents: read
+      id-token: write   # Required for Workload Identity Federation
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # ── Authenticate to GCP via Workload Identity Federation ───────────────
+      # No service account key JSON — uses OIDC token from GitHub's IdP.
+      # The token is valid only for this workflow run.
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.CLOUDBUILD_SA_EMAIL }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker for Artifact Registry
+        run: |
+          gcloud auth configure-docker ${{ secrets.GCP_REGION }}-docker.pkg.dev --quiet
+
+      # ── Compute image tag (git short SHA) ──────────────────────────────────
+      - name: Compute image tag
+        id: tag
+        run: |
+          SHORT_SHA=$(git rev-parse --short HEAD)
+          echo "tag=${SHORT_SHA}" >> $GITHUB_OUTPUT
+
+      # ── Build and push BACKEND image ───────────────────────────────────────
+      - name: Set up Docker Buildx (for layer caching)
+        uses: docker/setup-buildx-action@v3
+
+      - name: Set backend image metadata
+        id: meta-backend
+        run: |
+          IMAGE="${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.AR_REPO }}/backend:${{ steps.tag.outputs.tag }}"
+          echo "image=${IMAGE}" >> $GITHUB_OUTPUT
+
+      - name: Build and push backend image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: apps/backend-api/Dockerfile
+          target: runtime
+          push: true
+          tags: |
+            ${{ steps.meta-backend.outputs.image }}
+            ${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.AR_REPO }}/backend:latest
+          # Inline cache: stores cache metadata inside the image manifest
+          cache-from: type=registry,ref=${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.AR_REPO }}/backend:cache
+          cache-to:   type=registry,ref=${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.AR_REPO }}/backend:cache,mode=max
+
+      # ── Build and push FRONTEND image ─────────────────────────────────────
+      - name: Get backend Cloud Run URL (for VITE build-arg)
+        id: backend-url
+        run: |
+          URL=$(gcloud run services describe ${{ env.BACKEND_SERVICE }} \
+            --region=${{ secrets.GCP_REGION }} \
+            --project=${{ secrets.GCP_PROJECT_ID }} \
+            --format="value(status.url)" 2>/dev/null || echo "https://placeholder.run.app")
+          echo "url=${URL}/api" >> $GITHUB_OUTPUT
+
+      - name: Set frontend image metadata
+        id: meta-frontend
+        run: |
+          IMAGE="${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.AR_REPO }}/frontend:${{ steps.tag.outputs.tag }}"
+          echo "image=${IMAGE}" >> $GITHUB_OUTPUT
+
+      - name: Build and push frontend image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: apps/frontend-spa/Dockerfile
+          push: true
+          tags: |
+            ${{ steps.meta-frontend.outputs.image }}
+            ${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.AR_REPO }}/frontend:latest
+          build-args: |
+            VITE_API_BASE_URL=${{ steps.backend-url.outputs.url }}
+          cache-from: type=registry,ref=${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.AR_REPO }}/frontend:cache
+          cache-to:   type=registry,ref=${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.AR_REPO }}/frontend:cache,mode=max
+
+  # ════════════════════════════════════════════════════════════════════════════
+  # JOB 3 — Deploy Backend to Cloud Run
+  # ════════════════════════════════════════════════════════════════════════════
+  deploy-backend:
+    name: "🚀 Deploy Backend"
+    runs-on: ubuntu-latest
+    needs: build
+    if: |
+      github.event_name != 'pull_request' &&
+      (github.event.inputs.service == 'both' || github.event.inputs.service == 'backend' || github.event.inputs.service == '')
+    timeout-minutes: 15
+    environment:
+      name: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
+      url: ${{ steps.deploy.outputs.url }}
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.CLOUDBUILD_SA_EMAIL }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Deploy backend to Cloud Run
+        id: deploy
+        run: |
+          gcloud run deploy ${{ env.BACKEND_SERVICE }} \
+            --image="${{ needs.build.outputs.backend_image }}" \
+            --region="${{ secrets.GCP_REGION }}" \
+            --project="${{ secrets.GCP_PROJECT_ID }}" \
+            --service-account="ecotrace-backend-sa@${{ secrets.GCP_PROJECT_ID }}.iam.gserviceaccount.com" \
+            --allow-unauthenticated \
+            --add-cloudsql-instances="${{ secrets.CLOUDSQL_INSTANCE }}" \
+            --set-secrets="DATABASE_URL=ecotrace-db-url:latest,JWT_SECRET_KEY=ecotrace-jwt-secret:latest" \
+            --set-env-vars="ENVIRONMENT=production,PROJECT_NAME=EcoTrace Carbon Footprint API,JWT_ALGORITHM=HS256,ACCESS_TOKEN_EXPIRE_MINUTES=60,LOG_LEVEL=info,WEB_CONCURRENCY=2,PORT=8080" \
+            --cpu=1 \
+            --memory=512Mi \
+            --cpu-throttling \
+            --min-instances=1 \
+            --max-instances=10 \
+            --concurrency=80 \
+            --port=8080 \
+            --timeout=300 \
+            --quiet
+
+          URL=$(gcloud run services describe ${{ env.BACKEND_SERVICE }} \
+            --region="${{ secrets.GCP_REGION }}" \
+            --format="value(status.url)")
+          echo "url=${URL}" >> $GITHUB_OUTPUT
+          echo "✅ Backend deployed: ${URL}"
+
+      - name: Verify backend health
+        run: |
+          URL="${{ steps.deploy.outputs.url }}"
+          echo "Health check: ${URL}/"
+          for i in $(seq 1 12); do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${URL}/")
+            [ "$STATUS" = "200" ] && { echo "✅ Healthy"; exit 0; }
+            echo "  Attempt $i — HTTP $STATUS, waiting 10s..."
+            sleep 10
+          done
+          echo "❌ Health check failed"; exit 1
+
+  # ════════════════════════════════════════════════════════════════════════════
+  # JOB 4 — Deploy Frontend to Cloud Run
+  # Waits for backend deploy to succeed so the correct URL is live.
+  # ════════════════════════════════════════════════════════════════════════════
+  deploy-frontend:
+    name: "🌐 Deploy Frontend"
+    runs-on: ubuntu-latest
+    needs: [build, deploy-backend]
+    if: |
+      always() && needs.build.result == 'success' &&
+      (needs.deploy-backend.result == 'success' || needs.deploy-backend.result == 'skipped') &&
+      github.event_name != 'pull_request'
+    timeout-minutes: 15
+    environment:
+      name: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
+      url: ${{ steps.deploy.outputs.url }}
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.CLOUDBUILD_SA_EMAIL }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Deploy frontend to Cloud Run
+        id: deploy
+        run: |
+          gcloud run deploy ${{ env.FRONTEND_SERVICE }} \
+            --image="${{ needs.build.outputs.frontend_image }}" \
+            --region="${{ secrets.GCP_REGION }}" \
+            --project="${{ secrets.GCP_PROJECT_ID }}" \
+            --allow-unauthenticated \
+            --cpu=0.5 \
+            --memory=256Mi \
+            --cpu-throttling \
+            --min-instances=0 \
+            --max-instances=5 \
+            --concurrency=1000 \
+            --port=8080 \
+            --timeout=60 \
+            --quiet
+
+          URL=$(gcloud run services describe ${{ env.FRONTEND_SERVICE }} \
+            --region="${{ secrets.GCP_REGION }}" \
+            --format="value(status.url)")
+          echo "url=${URL}" >> $GITHUB_OUTPUT
+          echo "✅ Frontend deployed: ${URL}"
+
+      - name: Verify frontend health
+        run: |
+          URL="${{ steps.deploy.outputs.url }}"
+          for i in $(seq 1 10); do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${URL}/health")
+            [ "$STATUS" = "200" ] && { echo "✅ Frontend healthy"; exit 0; }
+            echo "  Attempt $i — HTTP $STATUS, waiting 5s..."
+            sleep 5
+          done
+          echo "❌ Frontend health check failed"; exit 1
+
+  # ════════════════════════════════════════════════════════════════════════════
+  # JOB 5 — Notify deployment summary
+  # ════════════════════════════════════════════════════════════════════════════
+  notify:
+    name: "📣 Deployment Summary"
+    runs-on: ubuntu-latest
+    needs: [deploy-backend, deploy-frontend]
+    if: always() && github.event_name != 'pull_request'
+
+    steps:
+      - name: Print summary
+        run: |
+          echo "## 🌿 EcoTrace Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Service  | Status | URL |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------|--------|-----|" >> $GITHUB_STEP_SUMMARY
+          echo "| Backend  | ${{ needs.deploy-backend.result }}  | ${{ needs.deploy-backend.outputs.url || 'N/A' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Frontend | ${{ needs.deploy-frontend.result }} | ${{ needs.deploy-frontend.outputs.url || 'N/A' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Image Tag**: \`${{ needs.build.outputs.image_tag }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Commit**: \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Triggered by**: ${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
