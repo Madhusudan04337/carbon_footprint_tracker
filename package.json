@@ -10,6 +10,7 @@
   "scripts": {
     "dev:frontend": "npm run dev --workspace=apps/frontend",
     "dev:tracker": "npm run dev --workspace=apps/backend-tracker",
+    "dev:spa": "npm run dev --workspace=apps/frontend-spa",
     "build": "npm run build --workspaces --if-present",
     "test": "npm test --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present"
