@@ -68,18 +68,19 @@ class RecommendationService:
         Analyzes footprint history, isolates highest emission categories, filters active goals,
         and generates weekly plans.
         """
-        logs = log_repository.get_user_emissions_summary(db, user_id=user_id)
+        # Fetch aggregated emissions directly from the database
+        aggregates = log_repository.get_emissions_aggregation(db, user_id=user_id)
         goals = goal_repository.get_by_user(db, user_id=user_id)
         
-        # 1. Calculate emissions breakdown
+        # 1. Map emissions breakdown
         category_totals = {
             "transport": 0.0,
             "energy": 0.0,
             "diet": 0.0
         }
-        for log in logs:
-            if log.category in category_totals:
-                category_totals[log.category] += log.emissions_co2e
+        for category, emissions_sum in aggregates:
+            if category in category_totals:
+                category_totals[category] = emissions_sum or 0.0
                 
         # Sort categories to find highest emission drivers
         sorted_categories = sorted(

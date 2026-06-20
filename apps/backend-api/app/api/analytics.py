@@ -12,7 +12,9 @@ def get_summary(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    logs = log_repository.get_user_emissions_summary(db, user_id=current_user.id)
+    # Fetch aggregates and counts directly via optimized database methods
+    aggregates = log_repository.get_emissions_aggregation(db, user_id=current_user.id)
+    logs_count = log_repository.get_user_logs_count(db, user_id=current_user.id)
     
     total = 0.0
     breakdown = {
@@ -21,15 +23,13 @@ def get_summary(
         "energy": 0.0
     }
     
-    for log in logs:
-        total += log.emissions_co2e
-        if log.category in breakdown:
-            breakdown[log.category] += log.emissions_co2e
+    for category, emissions_sum in aggregates:
+        if category in breakdown:
+            breakdown[category] = round(emissions_sum or 0.0, 2)
+            total += emissions_sum or 0.0
             
     # Round metrics for readability
     total = round(total, 2)
-    for cat in breakdown:
-        breakdown[cat] = round(breakdown[cat], 2)
         
     # Standard monthly target benchmark: US baseline monthly average is 1333.33 kg
     national_monthly_average = 1333.33
@@ -45,5 +45,5 @@ def get_summary(
             "national_monthly_average": national_monthly_average,
             "percent_difference": percent_difference
         },
-        "logs_count": len(logs)
+        "logs_count": logs_count
     }

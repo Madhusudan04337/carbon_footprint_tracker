@@ -20,4 +20,21 @@ class LogRepository(BaseRepository[ActivityLog]):
             ActivityLog.deleted_at == None
         ).all()
 
+    def get_emissions_aggregation(self, db: Session, user_id: int):
+        from sqlalchemy import func
+        return db.query(
+            ActivityLog.category,
+            func.sum(ActivityLog.emissions_co2e)
+        ).filter(
+            ActivityLog.user_id == user_id,
+            ActivityLog.deleted_at == None
+        ).group_by(ActivityLog.category).all()
+
+    def get_user_logs_count(self, db: Session, user_id: int) -> int:
+        return db.query(ActivityLog).filter(
+            ActivityLog.user_id == user_id,
+            ActivityLog.deleted_at == None
+        ).count()
+
 log_repository = LogRepository()
+
