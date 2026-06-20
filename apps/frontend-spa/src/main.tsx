@@ -14,11 +14,58 @@ const queryClient = new QueryClient({
   }
 });
 
-// Configure simple mock auth credentials dynamically for demonstration testing
-if (typeof window !== 'undefined' && !localStorage.getItem('token')) {
-  // Sets a mock fallback token so that React Query fetches mock data smoothly out-of-the-box
-  localStorage.setItem('token', 'mock_jwt_access_token');
-}
+const ensureAuthenticated = async () => {
+  if (typeof window === 'undefined') return;
+  const token = localStorage.getItem('token');
+  if (token && token !== 'mock_jwt_access_token') return;
+
+  const defaultCreds = {
+    email: 'eco_guardian@ecotrace.org',
+    password: 'securepassword123'
+  };
+
+  try {
+    let res = await fetch('http://localhost:8000/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(defaultCreds)
+    });
+
+    if (!res.ok) {
+      // User doesn't exist, register them
+      const regRes = await fetch('http://localhost:8000/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...defaultCreds,
+          first_name: 'Eco',
+          last_name: 'Guardian',
+          country: 'US',
+          postal_code: '90210'
+        })
+      });
+
+      if (!regRes.ok) throw new Error('Auto-registration failed');
+
+      res = await fetch('http://localhost:8000/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(defaultCreds)
+      });
+    }
+
+    if (res.ok) {
+      const data = await res.json();
+      localStorage.setItem('token', data.access_token);
+      console.log('[EcoTrace] Auto-authenticated default user.');
+      window.location.reload();
+    }
+  } catch (e) {
+    console.warn('[EcoTrace] Auto-authentication bypassed. Ensure Python backend is running on port 8000.');
+  }
+};
+
+ensureAuthenticated();
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
