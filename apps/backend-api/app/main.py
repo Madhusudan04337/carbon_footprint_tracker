@@ -33,7 +33,7 @@ app = FastAPI(
 # CORS Policy configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # In production, swap with actual trusted domain lists
+    allow_origins=settings.ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

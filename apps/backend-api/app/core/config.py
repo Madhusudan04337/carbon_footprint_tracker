@@ -14,5 +14,8 @@ class Settings:
     
     # Database Settings
     DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./ecotrace.db")
+    
+    # CORS Settings
+    ALLOWED_ORIGINS: list = os.getenv("ALLOWED_ORIGINS", "*").split(",")
 
 settings = Settings()
