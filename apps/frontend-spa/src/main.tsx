@@ -25,7 +25,7 @@ const ensureAuthenticated = async () => {
   };
 
   try {
-    let res = await fetch('http://localhost:8000/api/auth/login', {
+    let res = await fetch('http://127.0.0.1:8000/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(defaultCreds)
@@ -33,7 +33,7 @@ const ensureAuthenticated = async () => {
 
     if (!res.ok) {
       // User doesn't exist, register them
-      const regRes = await fetch('http://localhost:8000/api/auth/register', {
+      const regRes = await fetch('http://127.0.0.1:8000/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -47,7 +47,7 @@ const ensureAuthenticated = async () => {
 
       if (!regRes.ok) throw new Error('Auto-registration failed');
 
-      res = await fetch('http://localhost:8000/api/auth/login', {
+      res = await fetch('http://127.0.0.1:8000/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(defaultCreds)
@@ -61,7 +61,7 @@ const ensureAuthenticated = async () => {
       window.location.reload();
     }
   } catch (e) {
-    console.warn('[EcoTrace] Auto-authentication bypassed. Ensure Python backend is running on port 8000.');
+    console.warn('[EcoTrace] Auto-authentication bypassed. Ensure Python backend is running on http://127.0.0.1:8000.');
   }
 };
 
