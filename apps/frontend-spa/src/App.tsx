@@ -24,9 +24,9 @@ export default function App() {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <div className="flex min-h-screen bg-forest-light dark:bg-forest-dark text-slate-800 dark:text-gray-100 transition-colors duration-300 font-body">
+    <div className="flex h-screen overflow-hidden bg-forest-light dark:bg-forest-dark text-slate-800 dark:text-gray-100 transition-colors duration-300 font-body">
       {/* Sidebar Navigation */}
-      <aside className="w-64 bg-white dark:bg-forest-surface border-r border-emerald-500/10 flex flex-col justify-between p-6">
+      <aside className="w-64 h-full bg-white dark:bg-forest-surface border-r border-emerald-500/10 flex flex-col justify-between p-5 select-none">
         <div className="space-y-8">
           <div className="flex items-center gap-3">
             <span className="text-2xl" role="img" aria-label="Logo">🌿</span>
