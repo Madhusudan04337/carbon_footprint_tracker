@@ -144,7 +144,7 @@ export default function Calculator() {
 
         <button 
           type="submit"
-          className="w-full p-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold transition-all disabled:opacity-50"
+          className="w-full p-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold transition-all disabled:opacity-50"
           disabled={addLogMutation.isPending}
         >
           {addLogMutation.isPending ? 'Logging activity...' : 'Log & Calculate Carbon Footprint'}

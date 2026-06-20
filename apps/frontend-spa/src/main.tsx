@@ -16,8 +16,6 @@ const queryClient = new QueryClient({
 
 const ensureAuthenticated = async () => {
   if (typeof window === 'undefined') return;
-  const token = localStorage.getItem('token');
-  if (token && token !== 'mock_jwt_access_token') return;
 
   const defaultCreds = {
     email: 'eco_guardian@ecotrace.org',
@@ -32,7 +30,7 @@ const ensureAuthenticated = async () => {
     });
 
     if (!res.ok) {
-      // User doesn't exist, register them
+      // User doesn't exist yet, register them first
       const regRes = await fetch('http://127.0.0.1:8000/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -58,21 +56,25 @@ const ensureAuthenticated = async () => {
       const data = await res.json();
       localStorage.setItem('token', data.access_token);
       console.log('[EcoTrace] Auto-authenticated default user.');
-      window.location.reload();
+    } else {
+      localStorage.removeItem('token');
     }
   } catch (e) {
     console.warn('[EcoTrace] Auto-authentication bypassed. Ensure Python backend is running on http://127.0.0.1:8000.');
   }
 };
 
-ensureAuthenticated();
+const init = async () => {
+  await ensureAuthenticated();
+  ReactDOM.createRoot(document.getElementById('root')!).render(
+    <React.StrictMode>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </QueryClientProvider>
+    </React.StrictMode>
+  );
+};
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    </QueryClientProvider>
-  </React.StrictMode>
-);
+init();

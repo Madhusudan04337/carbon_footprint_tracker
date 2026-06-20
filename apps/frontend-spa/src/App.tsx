@@ -39,7 +39,7 @@ export default function App() {
             <Link 
               to="/" 
               className={`p-3 rounded-xl text-sm font-medium transition-colors flex items-center gap-3 ${
-                isActive('/') ? 'bg-emerald-500 text-white' : 'hover:bg-emerald-500/10'
+                isActive('/') ? 'bg-emerald-700 text-white' : 'hover:bg-emerald-500/10'
               }`}
             >
               📊 Dashboard
@@ -47,7 +47,7 @@ export default function App() {
             <Link 
               to="/analytics" 
               className={`p-3 rounded-xl text-sm font-medium transition-colors flex items-center gap-3 ${
-                isActive('/analytics') ? 'bg-emerald-500 text-white' : 'hover:bg-emerald-500/10'
+                isActive('/analytics') ? 'bg-emerald-700 text-white' : 'hover:bg-emerald-500/10'
               }`}
             >
               📈 Analytics
@@ -55,7 +55,7 @@ export default function App() {
             <Link 
               to="/calculator" 
               className={`p-3 rounded-xl text-sm font-medium transition-colors flex items-center gap-3 ${
-                isActive('/calculator') ? 'bg-emerald-500 text-white' : 'hover:bg-emerald-500/10'
+                isActive('/calculator') ? 'bg-emerald-700 text-white' : 'hover:bg-emerald-500/10'
               }`}
             >
               🚗 Calculator
@@ -63,7 +63,7 @@ export default function App() {
             <Link 
               to="/goals" 
               className={`p-3 rounded-xl text-sm font-medium transition-colors flex items-center gap-3 ${
-                isActive('/goals') ? 'bg-emerald-500 text-white' : 'hover:bg-emerald-500/10'
+                isActive('/goals') ? 'bg-emerald-700 text-white' : 'hover:bg-emerald-500/10'
               }`}
             >
               🎯 Goals
@@ -71,7 +71,7 @@ export default function App() {
             <Link 
               to="/recommendations" 
               className={`p-3 rounded-xl text-sm font-medium transition-colors flex items-center gap-3 ${
-                isActive('/recommendations') ? 'bg-emerald-500 text-white' : 'hover:bg-emerald-500/10'
+                isActive('/recommendations') ? 'bg-emerald-700 text-white' : 'hover:bg-emerald-500/10'
               }`}
             >
               💡 Recommendations
@@ -119,7 +119,7 @@ export default function App() {
               to="/" 
               onClick={() => setMobileMenuOpen(false)}
               className={`p-3 rounded-xl text-sm font-medium transition-colors flex items-center gap-3 ${
-                isActive('/') ? 'bg-emerald-500 text-white' : 'hover:bg-emerald-500/10'
+                isActive('/') ? 'bg-emerald-700 text-white' : 'hover:bg-emerald-500/10'
               }`}
             >
               📊 Dashboard
@@ -128,7 +128,7 @@ export default function App() {
               to="/analytics" 
               onClick={() => setMobileMenuOpen(false)}
               className={`p-3 rounded-xl text-sm font-medium transition-colors flex items-center gap-3 ${
-                isActive('/analytics') ? 'bg-emerald-500 text-white' : 'hover:bg-emerald-500/10'
+                isActive('/analytics') ? 'bg-emerald-700 text-white' : 'hover:bg-emerald-500/10'
               }`}
             >
               📈 Analytics
@@ -137,7 +137,7 @@ export default function App() {
               to="/calculator" 
               onClick={() => setMobileMenuOpen(false)}
               className={`p-3 rounded-xl text-sm font-medium transition-colors flex items-center gap-3 ${
-                isActive('/calculator') ? 'bg-emerald-500 text-white' : 'hover:bg-emerald-500/10'
+                isActive('/calculator') ? 'bg-emerald-700 text-white' : 'hover:bg-emerald-500/10'
               }`}
             >
               🚗 Calculator
@@ -146,7 +146,7 @@ export default function App() {
               to="/goals" 
               onClick={() => setMobileMenuOpen(false)}
               className={`p-3 rounded-xl text-sm font-medium transition-colors flex items-center gap-3 ${
-                isActive('/goals') ? 'bg-emerald-500 text-white' : 'hover:bg-emerald-500/10'
+                isActive('/goals') ? 'bg-emerald-700 text-white' : 'hover:bg-emerald-500/10'
               }`}
             >
               🎯 Goals
@@ -155,7 +155,7 @@ export default function App() {
               to="/recommendations" 
               onClick={() => setMobileMenuOpen(false)}
               className={`p-3 rounded-xl text-sm font-medium transition-colors flex items-center gap-3 ${
-                isActive('/recommendations') ? 'bg-emerald-500 text-white' : 'hover:bg-emerald-500/10'
+                isActive('/recommendations') ? 'bg-emerald-700 text-white' : 'hover:bg-emerald-500/10'
               }`}
             >
               💡 Recommendations
