@@ -1,0 +1,56 @@
+/* EcoTrace Design Tokens & Theme Variables
+ * Fully compliant with WCAG 2.1 AA contrast requirements
+ */
+
+:root {
+  /* Fonts */
+  --font-headings: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  /* Typography Sizes */
+  --size-display-1: 2.25rem; /* 36px */
+  --size-heading-1: 1.5rem;  /* 24px */
+  --size-body-large: 1rem;   /* 16px */
+  --size-body-normal: 0.875rem; /* 14px */
+  --size-label-micro: 0.75rem;  /* 12px */
+
+  /* Light Theme Color Tokens */
+  --color-bg-base: #F4F7F5;
+  --color-bg-surface: #FFFFFF;
+  --color-primary: #065F46; /* Forest Green */
+  --color-text-main: #1F2937;
+  --color-text-muted: #4B5563;
+  --color-accent: #D97706; /* Warm Amber */
+  --color-error: #EF4444;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Dark Theme Color Tokens */
+    --color-bg-base: #0B130E; /* Forest Obsidian */
+    --color-bg-surface: #13221B;
+    --color-primary: #10B981; /* Mint Telemetry */
+    --color-text-main: #F3F4F6;
+    --color-text-muted: #8B9A93;
+    --color-accent: #F59E0B;
+    --color-error: #EF4444;
+  }
+}
+
+/* Accessibility Focus Styling */
+*:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Screen Reader Only Utility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}

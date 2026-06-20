@@ -51,3 +51,4 @@ uvicorn app.main:app --reload
 
 ## Related Documents
 *   **SRS & Architecture Reference**: [carbon_footprint_srs.md](file:///home/pirate/.gemini/antigravity-cli/brain/449a76d6-990c-42d6-bfbe-40702ec88c55/carbon_footprint_srs.md)
+*   **UI/UX Design Spec Reference**: [carbon_footprint_ui_spec.md](file:///home/pirate/.gemini/antigravity-cli/brain/449a76d6-990c-42d6-bfbe-40702ec88c55/carbon_footprint_ui_spec.md)
