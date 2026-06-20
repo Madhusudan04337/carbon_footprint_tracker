@@ -24,71 +24,74 @@ export default function App() {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <div className="flex h-screen overflow-hidden bg-forest-light dark:bg-forest-dark text-slate-800 dark:text-gray-100 transition-colors duration-300 font-body">
-      {/* Sidebar Navigation */}
-      <aside className="w-64 h-full bg-white dark:bg-forest-surface border-r border-emerald-500/10 flex flex-col justify-between p-5 select-none">
-        <div className="space-y-8">
-          <div className="flex items-center gap-3">
-            <span className="text-2xl" role="img" aria-label="Logo">🌿</span>
-            <span className="text-xl font-headings font-bold text-emerald-500">EcoTrace</span>
-          </div>
-          
-          <nav className="flex flex-col space-y-2" aria-label="Main Navigation">
-            <Link 
-              to="/" 
-              className={`p-3 rounded-xl text-sm font-medium transition-colors flex items-center gap-3 ${
-                isActive('/') ? 'bg-emerald-500 text-white' : 'hover:bg-emerald-500/10'
-              }`}
-            >
-              📊 Dashboard
-            </Link>
-            <Link 
-              to="/analytics" 
-              className={`p-3 rounded-xl text-sm font-medium transition-colors flex items-center gap-3 ${
-                isActive('/analytics') ? 'bg-emerald-500 text-white' : 'hover:bg-emerald-500/10'
-              }`}
-            >
-              📈 Analytics
-            </Link>
-            <Link 
-              to="/calculator" 
-              className={`p-3 rounded-xl text-sm font-medium transition-colors flex items-center gap-3 ${
-                isActive('/calculator') ? 'bg-emerald-500 text-white' : 'hover:bg-emerald-500/10'
-              }`}
-            >
-              🚗 Calculator
-            </Link>
-            <Link 
-              to="/goals" 
-              className={`p-3 rounded-xl text-sm font-medium transition-colors flex items-center gap-3 ${
-                isActive('/goals') ? 'bg-emerald-500 text-white' : 'hover:bg-emerald-500/10'
-              }`}
-            >
-              🎯 Goals
-            </Link>
-            <Link 
-              to="/recommendations" 
-              className={`p-3 rounded-xl text-sm font-medium transition-colors flex items-center gap-3 ${
-                isActive('/recommendations') ? 'bg-emerald-500 text-white' : 'hover:bg-emerald-500/10'
-              }`}
-            >
-              💡 Recommendations
-            </Link>
-          </nav>
+    <div className="flex flex-col lg:flex-row h-screen overflow-hidden bg-forest-light dark:bg-forest-dark text-slate-800 dark:text-gray-100 transition-colors duration-300 font-body">
+      {/* Sidebar Navigation / Mobile Top Bar */}
+      <aside className="w-full lg:w-64 h-auto lg:h-full bg-white dark:bg-forest-surface border-b lg:border-b-0 lg:border-r border-emerald-500/10 flex flex-row lg:flex-col justify-between items-center lg:items-stretch p-4 lg:p-5 select-none shrink-0 gap-4">
+        
+        {/* Brand Logo & Title */}
+        <div className="flex items-center gap-2">
+          <span className="text-xl sm:text-2xl" role="img" aria-label="Logo">🌿</span>
+          <span className="text-lg sm:text-xl font-headings font-bold text-emerald-500">EcoTrace</span>
         </div>
+        
+        {/* Navigation list */}
+        <nav className="flex flex-row lg:flex-col space-x-1 lg:space-x-0 lg:space-y-2 overflow-x-auto lg:overflow-x-visible py-1 lg:py-0 max-w-[60%] sm:max-w-none scrollbar-none" aria-label="Main Navigation">
+          <Link 
+            to="/" 
+            className={`px-3 py-1.5 lg:p-3 rounded-xl text-xs sm:text-sm font-medium transition-colors flex items-center gap-1.5 lg:gap-3 shrink-0 ${
+              isActive('/') ? 'bg-emerald-500 text-white' : 'hover:bg-emerald-500/10'
+            }`}
+          >
+            📊 <span className="hidden sm:inline lg:inline">Dashboard</span><span className="inline sm:hidden">Home</span>
+          </Link>
+          <Link 
+            to="/analytics" 
+            className={`px-3 py-1.5 lg:p-3 rounded-xl text-xs sm:text-sm font-medium transition-colors flex items-center gap-1.5 lg:gap-3 shrink-0 ${
+              isActive('/analytics') ? 'bg-emerald-500 text-white' : 'hover:bg-emerald-500/10'
+            }`}
+          >
+            📈 Analytics
+          </Link>
+          <Link 
+            to="/calculator" 
+            className={`px-3 py-1.5 lg:p-3 rounded-xl text-xs sm:text-sm font-medium transition-colors flex items-center gap-1.5 lg:gap-3 shrink-0 ${
+              isActive('/calculator') ? 'bg-emerald-500 text-white' : 'hover:bg-emerald-500/10'
+            }`}
+          >
+            🚗 Log
+          </Link>
+          <Link 
+            to="/goals" 
+            className={`px-3 py-1.5 lg:p-3 rounded-xl text-xs sm:text-sm font-medium transition-colors flex items-center gap-1.5 lg:gap-3 shrink-0 ${
+              isActive('/goals') ? 'bg-emerald-500 text-white' : 'hover:bg-emerald-500/10'
+            }`}
+          >
+            🎯 Goals
+          </Link>
+          <Link 
+            to="/recommendations" 
+            className={`px-3 py-1.5 lg:p-3 rounded-xl text-xs sm:text-sm font-medium transition-colors flex items-center gap-1.5 lg:gap-3 shrink-0 ${
+              isActive('/recommendations') ? 'bg-emerald-500 text-white' : 'hover:bg-emerald-500/10'
+            }`}
+          >
+            💡 <span className="hidden sm:inline lg:inline">Recommendations</span><span className="inline sm:hidden">Advice</span>
+          </Link>
+        </nav>
 
+        {/* Theme button */}
         <button 
           onClick={toggleTheme}
-          className="w-full p-3 rounded-xl border border-gray-300 dark:border-emerald-500/20 text-sm hover:bg-emerald-500/10 transition-colors"
+          className="p-1.5 lg:p-3 rounded-xl border border-gray-300 dark:border-emerald-500/20 text-xs sm:text-sm hover:bg-emerald-500/10 transition-colors shrink-0"
+          aria-label="Toggle light and dark mode themes"
         >
-          {theme === 'light' ? '🌙 Dark Mode' : '☀️ Light Mode'}
+          {theme === 'light' ? '🌙' : '☀️'}
         </button>
       </aside>
 
       {/* Main Panel Content */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col min-w-0 min-h-0">
         {/* Header toolbar */}
-        <header className="h-16 border-b border-emerald-500/10 bg-white dark:bg-forest-surface px-8 flex justify-end items-center">
+        <header className="hidden lg:flex h-16 border-b border-emerald-500/10 bg-white dark:bg-forest-surface px-8 justify-end items-center">
           <div className="flex items-center gap-4 text-sm font-medium">
             <span className="text-gray-400">Auth Token Mock Active</span>
             <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full"></span>
@@ -96,7 +99,7 @@ export default function App() {
         </header>
 
         {/* Dynamic content rendering page component views */}
-        <main className="flex-1 p-8 overflow-y-auto">
+        <main className="flex-1 p-4 sm:p-8 overflow-y-auto min-h-0 min-w-0">
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/analytics" element={<Analytics />} />
