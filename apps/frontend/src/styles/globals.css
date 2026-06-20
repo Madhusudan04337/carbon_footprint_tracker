@@ -1,0 +1,136 @@
+@import './design-tokens.css';
+
+/* Global Styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-bg-base);
+  color: var(--color-text-main);
+  min-height: 100vh;
+  line-height: 1.6;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-headings);
+  font-weight: 700;
+  color: var(--color-text-main);
+}
+
+/* Glassmorphism Container Card */
+.glass-card {
+  background-color: var(--color-bg-surface);
+  border: 1px solid rgba(16, 185, 129, 0.15);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.glass-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px -2px rgba(0, 0, 0, 0.08);
+}
+
+/* Layout Grids */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+/* Button Utilities */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  font-family: var(--font-headings);
+  font-weight: 600;
+  font-size: var(--size-body-normal);
+  border-radius: 8px;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+  min-height: 44px;
+  min-width: 44px;
+}
+
+.btn-primary {
+  background-color: var(--color-primary);
+  color: var(--color-bg-surface);
+}
+
+.btn-primary:hover {
+  filter: brightness(1.1);
+  transform: scale(1.02);
+}
+
+.btn-secondary {
+  background-color: transparent;
+  border: 1px solid var(--color-text-muted);
+  color: var(--color-text-main);
+}
+
+.btn-secondary:hover {
+  background-color: rgba(16, 185, 129, 0.05);
+  border-color: var(--color-primary);
+}
+
+/* Badge Utilities */
+.badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 9999px;
+  font-size: var(--size-label-micro);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.badge-green {
+  background-color: rgba(16, 185, 129, 0.15);
+  color: #10B981;
+}
+
+.badge-amber {
+  background-color: rgba(217, 119, 6, 0.15);
+  color: #D97706;
+}
+
+/* Form Styles */
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  font-size: var(--size-label-micro);
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--color-text-muted);
+}
+
+.form-input {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--color-text-muted);
+  background-color: var(--color-bg-surface);
+  color: var(--color-text-main);
+  font-family: var(--font-body);
+  font-size: var(--size-body-normal);
+  transition: border-color 0.2s ease;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
