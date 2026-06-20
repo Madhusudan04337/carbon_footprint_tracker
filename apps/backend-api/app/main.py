@@ -5,7 +5,7 @@ import logging
 
 from app.core.config import settings
 from app.core.database import engine, Base
-from app.api import auth, tracking, goals, analytics
+from app.api import auth, tracking, goals, analytics, recommendations
 from app.middleware.rate_limit import RateLimitMiddleware
 from app.core.exceptions import EcoTraceException
 
@@ -47,6 +47,7 @@ app.include_router(auth.router, prefix="/api")
 app.include_router(tracking.router, prefix="/api")
 app.include_router(goals.router, prefix="/api")
 app.include_router(analytics.router, prefix="/api")
+app.include_router(recommendations.router, prefix="/api")
 
 # Custom Global Exception Handling
 @app.exception_handler(EcoTraceException)
