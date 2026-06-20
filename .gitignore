@@ -1,5 +1,7 @@
 # Dependency directories
 node_modules/
+venv/
+.venv/
 
 # Build outputs
 dist/
@@ -9,6 +11,8 @@ out/
 
 # Database files & local states
 apps/backend-tracker/src/db.json
+*.db
+ecotrace.db
 
 # Environment variables
 .env
@@ -23,6 +27,10 @@ yarn-debug.log*
 yarn-error.log*
 logs/
 *.log
+
+# Python bytecode
+__pycache__/
+*.pyc
 
 # OS files
 .DS_Store
