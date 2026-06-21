@@ -39,3 +39,8 @@ Thumbs.db
 
 # Docker volumes / runtime data
 docker/postgres/data/
+
+# Testing artifacts
+playwright-report/
+test-results/
+playwright/.cache/
