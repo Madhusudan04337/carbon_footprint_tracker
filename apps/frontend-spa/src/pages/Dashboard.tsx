@@ -35,24 +35,24 @@ export default function Dashboard() {
       {/* Numerical Stats Widgets */}
       <section className="grid grid-cols-1 md:grid-cols-3 gap-6" aria-label="Footprint Metrics Overview">
         <div className="bg-white dark:bg-forest-surface p-6 rounded-2xl border border-emerald-500/10 shadow-sm hover:shadow-md transition-shadow">
-          <span className="text-xs uppercase font-bold tracking-wider text-emerald-500">Gross Carbon Output</span>
-          <h2 className="text-4xl mt-2 font-bold">{analytics?.total_emissions_co2e} <span className="text-sm font-normal text-gray-400">kg CO2e</span></h2>
-          <p className="text-xs text-gray-400 mt-2">Aggregated emissions recorded this billing period</p>
+          <span className="text-xs uppercase font-bold tracking-wider text-emerald-600 dark:text-emerald-400">Gross Carbon Output</span>
+          <h2 className="text-4xl mt-2 font-bold">{analytics?.total_emissions_co2e} <span className="text-sm font-normal text-gray-500 dark:text-gray-400">kg CO2e</span></h2>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">Aggregated emissions recorded this billing period</p>
         </div>
 
         <div className="bg-white dark:bg-forest-surface p-6 rounded-2xl border border-emerald-500/10 shadow-sm hover:shadow-md transition-shadow">
-          <span className="text-xs uppercase font-bold tracking-wider text-amber-500">Global Benchmark</span>
+          <span className="text-xs uppercase font-bold tracking-wider text-amber-700 dark:text-amber-400">Global Benchmark</span>
           <h2 className="text-4xl mt-2 font-bold">
             {analytics && analytics.benchmarks.percent_difference > 0 ? '+' : ''}
             {analytics?.benchmarks.percent_difference}%
           </h2>
-          <p className="text-xs text-gray-400 mt-2">Relative comparison to national averages</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">Relative comparison to national averages</p>
         </div>
 
         <div className="bg-white dark:bg-forest-surface p-6 rounded-2xl border border-emerald-500/10 shadow-sm hover:shadow-md transition-shadow">
-          <span className="text-xs uppercase font-bold tracking-wider text-emerald-500">Log Submissions</span>
+          <span className="text-xs uppercase font-bold tracking-wider text-emerald-600 dark:text-emerald-400">Log Submissions</span>
           <h2 className="text-4xl mt-2 font-bold">{analytics?.logs_count}</h2>
-          <p className="text-xs text-gray-400 mt-2">Total distinct habits registered and calculated</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">Total distinct habits registered and calculated</p>
         </div>
       </section>
 
@@ -122,7 +122,7 @@ export default function Dashboard() {
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="border-b border-emerald-500/10 text-xs uppercase text-gray-400">
+              <tr className="border-b border-emerald-500/10 text-xs uppercase text-gray-500 dark:text-gray-400">
                 <th className="py-3 px-4">Logged Date</th>
                 <th className="py-3 px-4">Category</th>
                 <th className="py-3 px-4">Activity Name</th>

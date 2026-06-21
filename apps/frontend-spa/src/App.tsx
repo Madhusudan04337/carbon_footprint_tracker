@@ -192,7 +192,7 @@ export default function App() {
         </header>
 
         {/* Dynamic page content */}
-        <main className="flex-1 p-4 sm:p-8 overflow-y-auto min-h-0 min-w-0">
+        <main tabIndex={0} aria-label="Main Content Area" className="flex-1 p-4 sm:p-8 overflow-y-auto min-h-0 min-w-0 focus:outline-none">
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/analytics" element={<Analytics />} />

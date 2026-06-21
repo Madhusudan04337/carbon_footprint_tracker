@@ -215,7 +215,7 @@ export default function Analytics() {
           <h3 className="text-lg font-headings">Emissions History Trend Line</h3>
           <div className="flex-1 relative mt-4">
             {filteredLogs.length === 0 ? (
-              <div className="absolute inset-0 flex items-center justify-center text-gray-400">No activity recorded in this window</div>
+              <div className="absolute inset-0 flex items-center justify-center text-gray-500 dark:text-gray-400">No activity recorded in this window</div>
             ) : (
               <Line data={lineChartData} options={lineChartOptions} />
             )}
@@ -227,7 +227,7 @@ export default function Analytics() {
           <h3 className="text-lg font-headings">Sector Footprint Allocation</h3>
           <div className="flex-1 relative mt-4 max-h-64">
             {filteredLogs.length === 0 ? (
-              <div className="absolute inset-0 flex items-center justify-center text-gray-400">No category breakdown available</div>
+              <div className="absolute inset-0 flex items-center justify-center text-gray-500 dark:text-gray-400">No category breakdown available</div>
             ) : (
               <Doughnut data={doughnutChartData} options={doughnutChartOptions} />
             )}
@@ -242,7 +242,7 @@ export default function Analytics() {
           <h3 id="a11y-heading" className="text-lg font-headings">Accessibility Equivalents</h3>
           <button 
             onClick={() => setShowTableFallback(!showTableFallback)}
-            className="text-emerald-500 hover:underline text-sm font-semibold focus:outline-none"
+            className="text-emerald-600 dark:text-emerald-400 hover:underline text-sm font-semibold focus:outline-none"
             aria-expanded={showTableFallback}
             aria-controls="a11y-data-table"
           >
@@ -255,7 +255,7 @@ export default function Analytics() {
             <table className="w-full text-left border-collapse text-sm">
               <caption>Summary Table of Carbon Activity Outputs mapped to the active graphs.</caption>
               <thead>
-                <tr className="border-b border-emerald-500/10 text-xs uppercase text-gray-400">
+                <tr className="border-b border-emerald-500/10 text-xs uppercase text-gray-500 dark:text-gray-400">
                   <th className="py-2 px-4">Date</th>
                   <th className="py-2 px-4">Category</th>
                   <th className="py-2 px-4 text-right">Value</th>
@@ -286,7 +286,7 @@ export default function Analytics() {
             <span className="text-3xl" role="img" aria-label="Fire emoji">🔥</span>
             <div>
               <h4 className="font-bold text-sm">3 Week Streak</h4>
-              <p className="text-xs text-gray-400">Logged habits consecutive days</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Logged habits consecutive days</p>
             </div>
           </div>
 
@@ -294,7 +294,7 @@ export default function Analytics() {
             <span className="text-3xl" role="img" aria-label="Bicycle emoji">🚲</span>
             <div>
               <h4 className="font-bold text-sm">Transit Master</h4>
-              <p className="text-xs text-gray-400">Diverted 5 trips to clean rail/bus</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Diverted 5 trips to clean rail/bus</p>
             </div>
           </div>
 
@@ -302,7 +302,7 @@ export default function Analytics() {
             <span className="text-3xl" role="img" aria-label="Seedling emoji">🌱</span>
             <div>
               <h4 className="font-bold text-sm">Carbon-Neutral Hero</h4>
-              <p className="text-xs text-gray-400">Footprint below Paris 1.5C target</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Footprint below Paris 1.5C target</p>
             </div>
           </div>
 

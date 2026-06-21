@@ -66,7 +66,7 @@ export default function Calculator() {
       <form onSubmit={handleSubmit} className="bg-white dark:bg-forest-surface p-8 rounded-2xl border border-emerald-500/10 shadow-sm space-y-6">
         
         <div>
-          <label htmlFor="category" className="block text-xs uppercase font-bold tracking-wider text-gray-400 mb-2">Emissions Sector</label>
+          <label htmlFor="category" className="block text-xs uppercase font-bold tracking-wider text-gray-500 dark:text-gray-400 mb-2">Emissions Sector</label>
           <select 
             id="category"
             className="w-full p-3 rounded-lg border border-gray-300 dark:border-emerald-500/20 bg-transparent text-sm focus:border-emerald-500 focus:outline-none"
@@ -81,7 +81,7 @@ export default function Calculator() {
         </div>
 
         <div>
-          <label htmlFor="subcategory" className="block text-xs uppercase font-bold tracking-wider text-gray-400 mb-2">Subcategory / Activity Type</label>
+          <label htmlFor="subcategory" className="block text-xs uppercase font-bold tracking-wider text-gray-500 dark:text-gray-400 mb-2">Subcategory / Activity Type</label>
           <select 
             id="subcategory"
             className="w-full p-3 rounded-lg border border-gray-300 dark:border-emerald-500/20 bg-transparent text-sm focus:border-emerald-500 focus:outline-none"
@@ -122,7 +122,7 @@ export default function Calculator() {
         </div>
 
         <div>
-          <label htmlFor="value" className="block text-xs uppercase font-bold tracking-wider text-gray-400 mb-2">
+          <label htmlFor="value" className="block text-xs uppercase font-bold tracking-wider text-gray-500 dark:text-gray-400 mb-2">
             {category === 'transport' && 'Distance Traveled (km)'}
             {category === 'diet' && 'Logging Interval (days)'}
             {category === 'energy' && 'Consumption Metric'}
@@ -141,7 +141,7 @@ export default function Calculator() {
         </div>
 
         <div>
-          <label htmlFor="date" className="block text-xs uppercase font-bold tracking-wider text-gray-400 mb-2">Logging Date</label>
+          <label htmlFor="date" className="block text-xs uppercase font-bold tracking-wider text-gray-500 dark:text-gray-400 mb-2">Logging Date</label>
           <input 
             id="date"
             type="date"

@@ -39,8 +39,8 @@ export default function Goals() {
           >
             <div className="space-y-2">
               <div className="flex justify-between items-center">
-                <span className="text-xs uppercase font-bold tracking-wider text-emerald-500">{goal.category} sector</span>
-                <span className="px-3 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-500">
+                <span className="text-xs uppercase font-bold tracking-wider text-emerald-600 dark:text-emerald-400">{goal.category} sector</span>
+                <span className="px-3 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-700 dark:text-amber-400">
                   -{goal.target_reduction_percent}% reduction
                 </span>
               </div>
@@ -51,8 +51,9 @@ export default function Goals() {
             </div>
 
             <div className="pt-4 border-t border-gray-100 dark:border-emerald-500/5">
-              <label className="flex items-center space-x-3 cursor-pointer select-none">
+              <label htmlFor={`goal-${goal.id}`} className="flex items-center space-x-3 cursor-pointer select-none">
                 <input 
+                  id={`goal-${goal.id}`}
                   type="checkbox" 
                   className="w-5 h-5 rounded border-gray-300 dark:border-emerald-500/20 text-emerald-500 focus:ring-emerald-500 focus:ring-offset-0 cursor-pointer"
                   checked={goal.completed}

@@ -85,7 +85,7 @@ export default function AuthPage({ onAuthenticated }: AuthPageProps) {
             <span className="text-3xl">🌿</span>
           </div>
           <h1 className="text-3xl font-bold text-white tracking-tight">EcoTrace</h1>
-          <p className="text-gray-400 mt-1 text-sm">Carbon Footprint Awareness Platform</p>
+          <p className="text-gray-300 mt-1 text-sm">Carbon Footprint Awareness Platform</p>
         </div>
 
         {/* Card */}
@@ -120,8 +120,9 @@ export default function AuthPage({ onAuthenticated }: AuthPageProps) {
               <>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-medium text-gray-400 mb-1.5">First Name</label>
+                    <label htmlFor="first_name" className="block text-xs font-medium text-gray-400 mb-1.5">First Name</label>
                     <input
+                      id="first_name"
                       type="text"
                       name="first_name"
                       value={form.first_name}
@@ -132,8 +133,9 @@ export default function AuthPage({ onAuthenticated }: AuthPageProps) {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-400 mb-1.5">Last Name</label>
+                    <label htmlFor="last_name" className="block text-xs font-medium text-gray-400 mb-1.5">Last Name</label>
                     <input
+                      id="last_name"
                       type="text"
                       name="last_name"
                       value={form.last_name}
@@ -146,8 +148,9 @@ export default function AuthPage({ onAuthenticated }: AuthPageProps) {
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-medium text-gray-400 mb-1.5">Country</label>
+                    <label htmlFor="country" className="block text-xs font-medium text-gray-400 mb-1.5">Country</label>
                     <select
+                      id="country"
                       name="country"
                       value={form.country}
                       onChange={handleChange}
@@ -166,8 +169,9 @@ export default function AuthPage({ onAuthenticated }: AuthPageProps) {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-400 mb-1.5">Postal Code</label>
+                    <label htmlFor="postal_code" className="block text-xs font-medium text-gray-400 mb-1.5">Postal Code</label>
                     <input
+                      id="postal_code"
                       type="text"
                       name="postal_code"
                       value={form.postal_code}
@@ -182,8 +186,9 @@ export default function AuthPage({ onAuthenticated }: AuthPageProps) {
 
             {/* Email */}
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1.5">Email Address</label>
+              <label htmlFor="email" className="block text-xs font-medium text-gray-400 mb-1.5">Email Address</label>
               <input
+                id="email"
                 type="email"
                 name="email"
                 value={form.email}
@@ -196,8 +201,9 @@ export default function AuthPage({ onAuthenticated }: AuthPageProps) {
 
             {/* Password */}
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1.5">Password</label>
+              <label htmlFor="password" className="block text-xs font-medium text-gray-400 mb-1.5">Password</label>
               <input
+                id="password"
                 type="password"
                 name="password"
                 value={form.password}
@@ -237,7 +243,7 @@ export default function AuthPage({ onAuthenticated }: AuthPageProps) {
             </button>
           </form>
 
-          <p className="text-center text-xs text-gray-500 mt-5">
+          <p className="text-center text-xs text-gray-300 mt-5">
             {mode === 'login' ? "Don't have an account? " : 'Already have an account? '}
             <button
               onClick={() => { setMode(mode === 'login' ? 'register' : 'login'); setError(''); }}
@@ -248,7 +254,7 @@ export default function AuthPage({ onAuthenticated }: AuthPageProps) {
           </p>
         </div>
 
-        <p className="text-center text-xs text-gray-600 mt-6">
+        <p className="text-center text-xs text-gray-300 mt-6">
           🌱 Track your carbon footprint. Help the planet.
         </p>
       </div>

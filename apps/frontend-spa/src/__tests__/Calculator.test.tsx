@@ -36,11 +36,11 @@ describe('Calculator Page Component Integration', () => {
     expect(subcategorySelect).toHaveValue('electricity');
 
     // Input usage value
-    const inputField = screen.getByLabelText(/usage value/i);
+    const inputField = screen.getByLabelText(/consumption metric/i);
     fireEvent.change(inputField, { target: { value: '250' } });
 
     // Submit form
-    const submitButton = screen.getByRole('button', { name: /log footprint activity/i });
+    const submitButton = screen.getByRole('button', { name: /log & calculate/i });
     fireEvent.click(submitButton);
 
     // Assert custom mutation hook was invoked with normalized inputs
@@ -55,8 +55,8 @@ describe('Calculator Page Component Integration', () => {
 
   test('displays warning validation if non-numerical entry is submitted', () => {
     render(<Calculator />);
-    const inputField = screen.getByLabelText(/usage value/i);
-    const submitButton = screen.getByRole('button', { name: /log footprint activity/i });
+    const inputField = screen.getByLabelText(/distance traveled/i);
+    const submitButton = screen.getByRole('button', { name: /log & calculate/i });
 
     // Enter invalid text
     fireEvent.change(inputField, { target: { value: 'invalid_number' } });

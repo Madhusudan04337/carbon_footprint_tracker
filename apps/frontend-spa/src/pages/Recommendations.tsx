@@ -52,10 +52,10 @@ export default function Recommendations() {
             >
               <div className="space-y-2 max-w-xl">
                 <div className="flex items-center gap-3">
-                  <span className="text-xs uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-500">
+                  <span className="text-xs uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
                     {rec.category}
                   </span>
-                  <span className="text-xs uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-amber-500/10 text-amber-500">
+                  <span className="text-xs uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-amber-500/10 text-amber-700 dark:text-amber-400">
                     {rec.difficulty} Difficulty
                   </span>
                 </div>
@@ -64,7 +64,7 @@ export default function Recommendations() {
                 <p className="text-xs text-gray-400 italic">Why: {rec.explanation}</p>
               </div>
 
-              <div className="bg-emerald-500/15 text-emerald-500 px-4 py-2 rounded-xl font-bold text-center w-full md:w-auto">
+              <div className="bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 px-4 py-2 rounded-xl font-bold text-center w-full md:w-auto">
                 -{rec.potential_saving_co2e_kg} kg
               </div>
             </div>
@@ -78,7 +78,7 @@ export default function Recommendations() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
           {recommendations && Object.entries(recommendations.weekly_action_plan).map(([day, task]: any) => (
             <div key={day} className="p-4 rounded-xl border border-emerald-500/5 bg-emerald-500/[0.02]">
-              <strong className="text-emerald-500 font-headings block mb-1">{day}</strong>
+              <strong className="text-emerald-600 dark:text-emerald-400 font-headings block mb-1">{day}</strong>
               <p className="text-gray-600 dark:text-gray-300">{task}</p>
             </div>
           ))}
