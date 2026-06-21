@@ -85,11 +85,11 @@ if gcloud sql instances describe "${CLOUDSQL_INSTANCE}" \
 else
     gcloud sql instances create "${CLOUDSQL_INSTANCE}" \
         --database-version=POSTGRES_16 \
-        --cpu=1 \
-        --memory=3840MB \
+        --tier=db-f1-micro \
+        --edition=ENTERPRISE \
         --region="${REGION}" \
         --storage-type=SSD \
-        --storage-size=20GB \
+        --storage-size=10GB \
         --storage-auto-increase \
         --no-assign-ip \
         --enable-google-private-path \
