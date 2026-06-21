@@ -15,10 +15,11 @@ export default function Dashboard() {
   }
 
   if (analyticsError) {
+    const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
     return (
       <div className="p-6 bg-red-100 border-l-4 border-red-500 text-red-700 rounded-md" role="alert">
-        <h3 className="font-bold">Database Connection Deficit</h3>
-        <p>Ensure the Python FastAPI backend is running on http://localhost:8000 and you are authenticated.</p>
+        <h3 className="font-bold">Backend Connection Error</h3>
+        <p>Could not reach the API at <code>{apiUrl}</code>. Please check your network or try again.</p>
       </div>
     );
   }
