@@ -8,14 +8,23 @@ import './styles/index.css';
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      refetchOnWindowFocus: false, // Prevents excessive triggers
+      refetchOnWindowFocus: false,
       retry: 1
     }
   }
 });
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000/api';
+
 const ensureAuthenticated = async () => {
   if (typeof window === 'undefined') return;
+
+  // If a token is already stored and not expired, skip re-auth
+  const existingToken = localStorage.getItem('token');
+  if (existingToken) {
+    console.log('[EcoTrace] Found existing auth token, skipping re-auth.');
+    return;
+  }
 
   const defaultCreds = {
     email: 'eco_guardian@ecotrace.org',
@@ -23,15 +32,15 @@ const ensureAuthenticated = async () => {
   };
 
   try {
-    let res = await fetch('http://127.0.0.1:8000/api/auth/login', {
+    let res = await fetch(`${API_BASE}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(defaultCreds)
     });
 
     if (!res.ok) {
-      // User doesn't exist yet, register them first
-      const regRes = await fetch('http://127.0.0.1:8000/api/auth/register', {
+      // User doesn't exist yet — register them first
+      const regRes = await fetch(`${API_BASE}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -45,7 +54,7 @@ const ensureAuthenticated = async () => {
 
       if (!regRes.ok) throw new Error('Auto-registration failed');
 
-      res = await fetch('http://127.0.0.1:8000/api/auth/login', {
+      res = await fetch(`${API_BASE}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(defaultCreds)
@@ -58,9 +67,10 @@ const ensureAuthenticated = async () => {
       console.log('[EcoTrace] Auto-authenticated default user.');
     } else {
       localStorage.removeItem('token');
+      console.warn(`[EcoTrace] Auth failed (HTTP ${res.status}). API: ${API_BASE}`);
     }
   } catch (e) {
-    console.warn('[EcoTrace] Auto-authentication bypassed. Ensure Python backend is running on http://127.0.0.1:8000.');
+    console.warn(`[EcoTrace] Auto-authentication failed. API: ${API_BASE}`, e);
   }
 };
 

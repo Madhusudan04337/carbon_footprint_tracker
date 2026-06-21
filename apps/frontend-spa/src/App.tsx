@@ -178,9 +178,18 @@ export default function App() {
       <div className="flex-1 flex flex-col min-w-0 min-h-0">
         {/* Header toolbar */}
         <header className="hidden lg:flex h-16 border-b border-emerald-500/10 bg-white dark:bg-forest-surface px-8 justify-end items-center">
-          <div className="flex items-center gap-4 text-sm font-medium">
-            <span className="text-gray-400">Auth Token Mock Active</span>
-            <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full"></span>
+          <div className="flex items-center gap-3 text-sm font-medium">
+            {localStorage.getItem('token') ? (
+              <>
+                <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+                <span className="text-emerald-600 dark:text-emerald-400">Authenticated</span>
+              </>
+            ) : (
+              <>
+                <span className="w-2 h-2 bg-amber-400 rounded-full"></span>
+                <span className="text-amber-500">Not authenticated</span>
+              </>
+            )}
           </div>
         </header>
 
