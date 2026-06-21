@@ -98,6 +98,21 @@ export default function Dashboard() {
               />
             </div>
           </div>
+
+          {analytics?.category_breakdown?.waste !== undefined && (
+            <div>
+              <div className="flex justify-between text-sm mb-2">
+                <span className="flex items-center gap-2">🗑️ Waste & Recycling</span>
+                <span className="font-bold">{analytics.category_breakdown.waste} kg CO2e</span>
+              </div>
+              <div className="h-3 bg-emerald-500/10 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-sky-500 rounded-full transition-all duration-500" 
+                  style={{ width: `${Math.max(0, Math.min(100, (analytics.category_breakdown.waste / (analytics.total_emissions_co2e || 1)) * 100))}%` }}
+                />
+              </div>
+            </div>
+          )}
         </div>
       </section>
 

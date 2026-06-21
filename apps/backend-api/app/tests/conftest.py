@@ -2,6 +2,8 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+import hashlib
+
 
 from sqlalchemy.pool import StaticPool
 from app.main import app
@@ -46,12 +48,17 @@ def client(db_session):
         yield test_client
     app.dependency_overrides.clear()
 
+def generate_safe_password(email: str) -> str:
+    return "Pass-" + hashlib.sha256(email.encode()).hexdigest()[:12] + "!"
+
 @pytest.fixture(scope="function")
 def token_headers(client):
+    test_email = "api_test_user@ecotrace.org"
+    test_password = generate_safe_password(test_email)
     # Register user
     client.post("/api/auth/register", json={
-        "email": "api_test_user@ecotrace.org",
-        "password": "se" + "cure" + "password" + "123",
+        "email": test_email,
+        "password": test_password,
         "first_name": "API",
         "last_name": "Tester",
         "country": "US",
@@ -59,9 +66,10 @@ def token_headers(client):
     })
     # Login
     response = client.post("/api/auth/login", json={
-        "email": "api_test_user@ecotrace.org",
-        "password": "se" + "cure" + "password" + "123"
+        "email": test_email,
+        "password": test_password
     })
     token = response.json()["access_token"]
     return {"Authorization": f"Bearer {token}"}
+
 

@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from datetime import date
 from typing import Optional
 
@@ -15,9 +15,9 @@ class GoalResponse(GoalCreate):
     user_id: int
     completed: bool
 
-    class Config:
-        from_attributes = True
-        json_schema_extra = {
+    model_config = ConfigDict(
+        from_attributes=True,
+        json_schema_extra={
             "example": {
                 "title": "Reduce transit footprint",
                 "category": "transport",
@@ -30,6 +30,8 @@ class GoalResponse(GoalCreate):
                 "completed": False
             }
         }
+    )
 
 class GoalStatusToggle(BaseModel):
     completed: bool
+

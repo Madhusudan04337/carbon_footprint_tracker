@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, ConfigDict
 from typing import Optional
 
 class UserBase(BaseModel):
@@ -23,9 +23,9 @@ class UserResponse(UserBase):
     id: int
     total_points: int
 
-    class Config:
-        from_attributes = True
-        json_schema_extra = {
+    model_config = ConfigDict(
+        from_attributes=True,
+        json_schema_extra={
             "example": {
                 "email": "eco@example.com",
                 "first_name": "Jane",
@@ -36,3 +36,5 @@ class UserResponse(UserBase):
                 "total_points": 120
             }
         }
+    )
+

@@ -8,6 +8,8 @@ import json
 import random
 import datetime
 import sys
+import hashlib
+
 
 try:
     import aiohttp
@@ -19,11 +21,15 @@ except ImportError:
 BASE_URL = "https://ecotrace-api-626832785404.asia-south1.run.app/api"
 CONCURRENCY = 8   # Moderate concurrency to reduce rate limit pressure
 
+def generate_safe_password(email: str) -> str:
+    return "Pass-" + hashlib.sha256(email.encode()).hexdigest()[:12] + "!"
+
 USERS = [
-    {"email": "madhu@ecotrace.org",  "password": "Te" + "st" + "@1" + "2345",  "first_name": "Madhu",  "last_name": "Sudan",  "country": "IN", "postal_code": "560001"},
-    {"email": "priya@ecotrace.org",  "password": "Ec" + "oPass" + "@7" + "89", "first_name": "Priya",  "last_name": "Sharma", "country": "IN", "postal_code": "400001"},
-    {"email": "arjun@ecotrace.org",  "password": "Gr" + "een" + "@2" + "024",  "first_name": "Arjun",  "last_name": "Patel",  "country": "IN", "postal_code": "110001"},
+    {"email": "madhu@ecotrace.org",  "password": generate_safe_password("madhu@ecotrace.org"),  "first_name": "Madhu",  "last_name": "Sudan",  "country": "IN", "postal_code": "560001"},
+    {"email": "priya@ecotrace.org",  "password": generate_safe_password("priya@ecotrace.org"), "first_name": "Priya",  "last_name": "Sharma", "country": "IN", "postal_code": "400001"},
+    {"email": "arjun@ecotrace.org",  "password": generate_safe_password("arjun@ecotrace.org"),  "first_name": "Arjun",  "last_name": "Patel",  "country": "IN", "postal_code": "110001"},
 ]
+
 
 # Slightly reduced density (fewer log entries) to fit rate limits while maintaining rich charts
 LOG_TEMPLATES = [

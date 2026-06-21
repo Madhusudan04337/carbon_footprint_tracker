@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from datetime import date
 from typing import Literal
 
@@ -13,9 +13,9 @@ class LogResponse(LogCreate):
     user_id: int
     emissions_co2e: float
 
-    class Config:
-        from_attributes = True
-        json_schema_extra = {
+    model_config = ConfigDict(
+        from_attributes=True,
+        json_schema_extra={
             "example": {
                 "category": "transport",
                 "sub_category": "gasoline_car",
@@ -26,3 +26,5 @@ class LogResponse(LogCreate):
                 "emissions_co2e": 25.5
             }
         }
+    )
+

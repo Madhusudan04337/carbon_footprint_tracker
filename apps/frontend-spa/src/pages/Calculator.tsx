@@ -4,7 +4,7 @@ import { useAddLog } from '../hooks/useTracking.ts';
 export default function Calculator() {
   const addLogMutation = useAddLog();
 
-  const [category, setCategory] = useState<'transport' | 'diet' | 'energy'>('transport');
+  const [category, setCategory] = useState<'transport' | 'diet' | 'energy' | 'waste'>('transport');
   const [subCategory, setSubCategory] = useState<string>('car');
   const [value, setValue] = useState<string>('');
   const [date, setDate] = useState<string>(new Date().toISOString().split('T')[0]);
@@ -18,6 +18,8 @@ export default function Calculator() {
       setSubCategory('vegan');
     } else if (category === 'energy') {
       setSubCategory('electricity');
+    } else if (category === 'waste') {
+      setSubCategory('landfill');
     }
   }, [category]);
 
@@ -74,6 +76,7 @@ export default function Calculator() {
             <option value="transport" className="dark:bg-forest-surface">🚗 Transportation</option>
             <option value="diet" className="dark:bg-forest-surface">🍔 Food & Diet</option>
             <option value="energy" className="dark:bg-forest-surface">⚡ Home Utility Energy</option>
+            <option value="waste" className="dark:bg-forest-surface">🗑️ Waste & Recycling</option>
           </select>
         </div>
 
@@ -109,6 +112,12 @@ export default function Calculator() {
                 <option value="natural_gas" className="dark:bg-forest-surface">Natural Gas (m³)</option>
               </>
             )}
+            {category === 'waste' && (
+              <>
+                <option value="recycling" className="dark:bg-forest-surface">Recycling (kg)</option>
+                <option value="landfill" className="dark:bg-forest-surface">Landfill Waste (kg)</option>
+              </>
+            )}
           </select>
         </div>
 
@@ -117,6 +126,7 @@ export default function Calculator() {
             {category === 'transport' && 'Distance Traveled (km)'}
             {category === 'diet' && 'Logging Interval (days)'}
             {category === 'energy' && 'Consumption Metric'}
+            {category === 'waste' && 'Waste Amount (kg)'}
           </label>
           <input 
             id="value"

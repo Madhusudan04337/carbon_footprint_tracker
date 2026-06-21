@@ -1,6 +1,6 @@
 from sqlalchemy import Column, String, Integer, Float, Boolean, DateTime, ForeignKey, Date
 from sqlalchemy.orm import relationship
-from datetime import datetime
+from datetime import datetime, timezone
 from app.core.database import Base
 
 class Goal(Base):
@@ -17,8 +17,8 @@ class Goal(Base):
     completed = Column(Boolean, default=False, nullable=False)
     
     # Audit & Soft-Delete Fields
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc).replace(tzinfo=None), nullable=False)
+    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc).replace(tzinfo=None), onupdate=lambda: datetime.now(timezone.utc).replace(tzinfo=None), nullable=False)
     deleted_at = Column(DateTime, nullable=True)
 
     # Relationships

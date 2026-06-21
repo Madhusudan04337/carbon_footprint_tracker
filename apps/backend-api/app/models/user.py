@@ -1,6 +1,6 @@
 from sqlalchemy import Column, String, Integer, DateTime
 from sqlalchemy.orm import relationship
-from datetime import datetime
+from datetime import datetime, timezone
 from app.core.database import Base
 
 class User(Base):
@@ -16,8 +16,8 @@ class User(Base):
     total_points = Column(Integer, default=0)
     
     # Audit & Soft-Delete Fields
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc).replace(tzinfo=None), nullable=False)
+    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc).replace(tzinfo=None), onupdate=lambda: datetime.now(timezone.utc).replace(tzinfo=None), nullable=False)
     deleted_at = Column(DateTime, nullable=True)
 
     # Relationships

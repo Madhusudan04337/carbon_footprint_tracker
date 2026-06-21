@@ -7,13 +7,17 @@ Usage: python seed_data.py
 
 import requests
 import json
+import hashlib
 from datetime import date, timedelta
 
 BASE = "http://127.0.0.1:8000/api"
 
+def generate_safe_password(email: str) -> str:
+    return "Pass-" + hashlib.sha256(email.encode()).hexdigest()[:12] + "!"
+
 # ─── 1. Authenticate ─────────────────────────────────────────────────────────
 print("🔐 Authenticating...")
-creds = {"email": "eco_guardian@ecotrace.org", "password": "se" + "cure" + "password" + "123"}
+creds = {"email": "eco_guardian@ecotrace.org", "password": generate_safe_password("eco_guardian@ecotrace.org")}
 
 res = requests.post(f"{BASE}/auth/login", json=creds)
 if not res.ok:

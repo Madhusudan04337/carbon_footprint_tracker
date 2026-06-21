@@ -109,13 +109,14 @@ export default function Analytics() {
   const transportSum = filteredLogs.filter(l => l.category === 'transport').reduce((a, b) => a + b.emissions_co2e, 0);
   const energySum = filteredLogs.filter(l => l.category === 'energy').reduce((a, b) => a + b.emissions_co2e, 0);
   const dietSum = filteredLogs.filter(l => l.category === 'diet').reduce((a, b) => a + b.emissions_co2e, 0);
+  const wasteSum = filteredLogs.filter(l => l.category === 'waste').reduce((a, b) => a + b.emissions_co2e, 0);
 
   const doughnutChartData = {
-    labels: ['Transportation', 'Home Energy', 'Diet & Food'],
+    labels: ['Transportation', 'Home Energy', 'Diet & Food', 'Waste & Recycling'],
     datasets: [
       {
-        data: [transportSum, energySum, dietSum],
-        backgroundColor: ['#0D9488', '#F59E0B', '#EF4444'],
+        data: [transportSum, energySum, dietSum, wasteSum],
+        backgroundColor: ['#0D9488', '#F59E0B', '#EF4444', '#0EA5E9'],
         borderWidth: 0,
         hoverOffset: 4
       }

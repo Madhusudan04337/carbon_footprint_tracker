@@ -13,7 +13,7 @@ const getHeaders = () => {
 
 export interface ActivityLog {
   id: number;
-  category: 'transport' | 'diet' | 'energy';
+  category: 'transport' | 'diet' | 'energy' | 'waste';
   sub_category: string;
   value: number;
   emissions_co2e: number;
@@ -37,6 +37,7 @@ export interface AnalyticsSummary {
     transport: number;
     diet: number;
     energy: number;
+    waste?: number;
   };
   benchmarks: {
     user_total: number;
