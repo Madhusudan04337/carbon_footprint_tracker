@@ -158,7 +158,7 @@ steps:
           --region="${_REGION}" \
           --platform=managed \
           --allow-unauthenticated \
-          --cpu=0.5 \
+          --cpu=1 \
           --memory=256Mi \
           --cpu-throttling \
           --min-instances=0 \

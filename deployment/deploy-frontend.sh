@@ -56,7 +56,7 @@ echo "▶ [2/3] Deploying frontend to Cloud Run..."
         --platform=managed \
         --project="${PROJECT_ID}" \
         --allow-unauthenticated \
-        --cpu=0.5 \
+        --cpu=1 \
         --memory=256Mi \
         --cpu-throttling \
         --min-instances=0 \
