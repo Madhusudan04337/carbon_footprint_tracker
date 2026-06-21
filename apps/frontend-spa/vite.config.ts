@@ -5,5 +5,14 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 5173
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          chartjs: ['chart.js', 'react-chartjs-2']
+        }
+      }
+    }
   }
 });

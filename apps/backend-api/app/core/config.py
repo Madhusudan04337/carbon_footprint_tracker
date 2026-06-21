@@ -54,10 +54,8 @@ class Settings:
         # Warn if using the default insecure JWT key in a non-dev environment
         if (self.ENVIRONMENT != "development"
                 and self.JWT_SECRET_KEY == "ecotrace_default_super_secret_signing_key_change_me"):
-            logger.warning(
-                "[Security] JWT_SECRET_KEY is using the default insecure value! "
-                "Set it via Secret Manager in production."
-            )
+            logger.critical("[Security] JWT_SECRET_KEY is using the default insecure value in production!")
+            raise ValueError("Insecure JWT_SECRET_KEY detected in production environment. Failing fast.")
 
 settings = Settings()
 settings.__post_init__()

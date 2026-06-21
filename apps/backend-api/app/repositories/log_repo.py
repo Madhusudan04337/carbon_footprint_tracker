@@ -9,7 +9,8 @@ class LogRepository(BaseRepository[ActivityLog]):
         super().__init__(ActivityLog)
 
     def get_by_user(self, db: Session, user_id: int, skip: int = 0, limit: int = 100) -> List[ActivityLog]:
-        return db.query(ActivityLog).filter(
+        from sqlalchemy.orm import selectinload
+        return db.query(ActivityLog).options(selectinload(ActivityLog.user)).filter(
             ActivityLog.user_id == user_id,
             ActivityLog.deleted_at == None
         ).order_by(ActivityLog.date.desc()).offset(skip).limit(limit).all()

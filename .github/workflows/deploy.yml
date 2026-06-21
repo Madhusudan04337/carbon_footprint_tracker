@@ -245,6 +245,25 @@ jobs:
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
 
+      - name: Run Database Migrations (Alembic)
+        run: |
+          # Create and execute a Cloud Run Job to run Alembic migrations safely
+          gcloud run jobs deploy ecotrace-migrate \
+            --image="${{ needs.build.outputs.backend_image }}" \
+            --region="${{ secrets.GCP_REGION }}" \
+            --project="${{ secrets.GCP_PROJECT_ID }}" \
+            --service-account="ecotrace-backend-sa@${{ secrets.GCP_PROJECT_ID }}.iam.gserviceaccount.com" \
+            --set-cloudsql-instances="${{ secrets.CLOUDSQL_INSTANCE }}" \
+            --set-secrets="DATABASE_URL=ecotrace-db-url:latest" \
+            --set-env-vars="ENVIRONMENT=production" \
+            --command="alembic" \
+            --args="upgrade,head" \
+            --quiet || true
+
+          gcloud run jobs execute ecotrace-migrate \
+            --region="${{ secrets.GCP_REGION }}" \
+            --wait || true
+
       - name: Deploy backend to Cloud Run
         id: deploy
         run: |

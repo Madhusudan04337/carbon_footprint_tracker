@@ -5,13 +5,21 @@ from app.api.deps import get_current_user
 from app.models.user import User
 from app.repositories.log_repo import log_repository
 
+from cachetools import TTLCache
+
 router = APIRouter(prefix="/analytics", tags=["Insights & Analytics"])
+
+# Cache analytics aggregations for 5 minutes (TTL) to reduce database load
+analytics_cache = TTLCache(maxsize=1000, ttl=300)
 
 @router.get("/summary")
 def get_summary(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
+    cached_data = analytics_cache.get(current_user.id)
+    if cached_data:
+        return cached_data
     # Fetch aggregates and counts directly via optimized database methods
     aggregates = log_repository.get_emissions_aggregation(db, user_id=current_user.id)
     logs_count = log_repository.get_user_logs_count(db, user_id=current_user.id)
@@ -38,7 +46,7 @@ def get_summary(
     if national_monthly_average > 0:
         percent_difference = round(((total - national_monthly_average) / national_monthly_average) * 100, 1)
 
-    return {
+    data = {
         "total_emissions_co2e": total,
         "category_breakdown": breakdown,
         "benchmarks": {
@@ -48,3 +56,6 @@ def get_summary(
         },
         "logs_count": logs_count
     }
+    
+    analytics_cache[current_user.id] = data
+    return data
