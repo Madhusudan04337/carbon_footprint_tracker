@@ -203,6 +203,8 @@ else
     gcloud iam service-accounts create "${CLOUDBUILD_SA}" \
         --display-name="EcoTrace Cloud Build Service Account" \
         --project="${PROJECT_ID}"
+    echo "   ⌛ Waiting for service account replication..."
+    sleep 10
 fi
 
 # Cloud Build needs to push to Artifact Registry and deploy to Cloud Run
