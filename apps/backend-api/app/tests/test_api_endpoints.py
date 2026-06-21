@@ -44,3 +44,16 @@ def test_create_log_negative_value_fails(client, token_headers):
     }
     response = client.post("/api/logs", json=payload, headers=token_headers)
     assert response.status_code == 422
+
+def test_create_waste_emissions_log(client, token_headers):
+    # Test landfill waste log
+    payload = {
+        "category": "waste",
+        "sub_category": "landfill",
+        "value": 10.0, # 10 kg
+        "date": "2026-06-20"
+    }
+    response = client.post("/api/logs", json=payload, headers=token_headers)
+    assert response.status_code == 201
+    assert response.json()["emissions_co2e"] == 5.0 # 10 * 0.5
+

@@ -76,7 +76,8 @@ class RecommendationService:
         category_totals = {
             "transport": 0.0,
             "energy": 0.0,
-            "diet": 0.0
+            "diet": 0.0,
+            "waste": 0.0
         }
         for category, emissions_sum in aggregates:
             if category in category_totals:

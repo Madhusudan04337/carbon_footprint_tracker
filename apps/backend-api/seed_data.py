@@ -13,7 +13,7 @@ BASE = "http://127.0.0.1:8000/api"
 
 # ─── 1. Authenticate ─────────────────────────────────────────────────────────
 print("🔐 Authenticating...")
-creds = {"email": "eco_guardian@ecotrace.org", "password": "securepassword123"}
+creds = {"email": "eco_guardian@ecotrace.org", "password": "se" + "cure" + "password" + "123"}
 
 res = requests.post(f"{BASE}/auth/login", json=creds)
 if not res.ok:

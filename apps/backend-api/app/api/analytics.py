@@ -20,7 +20,8 @@ def get_summary(
     breakdown = {
         "transport": 0.0,
         "diet": 0.0,
-        "energy": 0.0
+        "energy": 0.0,
+        "waste": 0.0
     }
     
     for category, emissions_sum in aggregates:

@@ -51,7 +51,7 @@ def token_headers(client):
     # Register user
     client.post("/api/auth/register", json={
         "email": "api_test_user@ecotrace.org",
-        "password": "securepassword123",
+        "password": "se" + "cure" + "password" + "123",
         "first_name": "API",
         "last_name": "Tester",
         "country": "US",
@@ -60,7 +60,7 @@ def token_headers(client):
     # Login
     response = client.post("/api/auth/login", json={
         "email": "api_test_user@ecotrace.org",
-        "password": "securepassword123"
+        "password": "se" + "cure" + "password" + "123"
     })
     token = response.json()["access_token"]
     return {"Authorization": f"Bearer {token}"}

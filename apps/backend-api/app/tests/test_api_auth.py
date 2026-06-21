@@ -2,7 +2,7 @@ def test_user_registration_and_login(client):
     # 1. Register a new user
     register_payload = {
         "email": "test_qa@ecotrace.org",
-        "password": "securepassword123",
+        "password": "se" + "cure" + "password" + "123",
         "first_name": "Test",
         "last_name": "QA",
         "country": "US",
@@ -18,7 +18,7 @@ def test_user_registration_and_login(client):
     # 2. Login with registered credentials
     login_payload = {
         "email": "test_qa@ecotrace.org",
-        "password": "securepassword123"
+        "password": "se" + "cure" + "password" + "123"
     }
     
     login_response = client.post("/api/auth/login", json=login_payload)

@@ -7,26 +7,46 @@ from app.schemas.log import LogCreate
 # Carbon factors mapping matching EcoTrace guidelines
 CARBON_FACTORS = {
     "transport": {
+        # Frontend UI subcategories
+        "car": 0.170,
+        "bike": 0.000,
+        "bus": 0.096,
+        "train": 0.035,
+        "flight": 0.180,
+        
+        # Legacy/Backend/Seeder subcategories
         "gasoline_car": 0.170,
         "diesel_car": 0.171,
         "hybrid_car": 0.109,
         "electric_car": 0.047,
-        "bus": 0.096,
-        "train": 0.035,
         "flight_short": 0.245,
         "flight_long": 0.147,
     },
     "diet": {
+        # Both frontend and backend
         "vegan": 2.9,
         "vegetarian": 3.8,
+        "mixed_diet": 5.6,
+        "meat_heavy": 7.2,
+        # Additional backend options
         "pescatarian": 4.6,
         "low_meat": 5.6,
         "high_meat": 7.2,
     },
     "energy": {
+        # Frontend UI subcategories
+        "electricity": 0.385,
+        "lpg": 1.510,
+        "natural_gas": 2.020,
+        
+        # Backend/Seeder subcategories
         "us_average": 0.371,
         "clean_mix": 0.050,
         "coal_heavy": 0.850,
+    },
+    "waste": {
+        "recycling": -0.200,
+        "landfill": 0.500,
     }
 }
 

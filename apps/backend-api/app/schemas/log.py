@@ -3,7 +3,7 @@ from datetime import date
 from typing import Literal
 
 class LogCreate(BaseModel):
-    category: Literal["transport", "diet", "energy"]
+    category: Literal["transport", "diet", "energy", "waste"]
     sub_category: str = Field(..., min_length=1, max_length=100)
     value: float = Field(..., gt=0, description="Raw unit value to calculate (e.g. km, kWh, days)")
     date: date
