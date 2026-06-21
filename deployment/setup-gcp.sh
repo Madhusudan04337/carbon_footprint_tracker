@@ -91,8 +91,6 @@ else
         --storage-type=SSD \
         --storage-size=10GB \
         --storage-auto-increase \
-        --no-assign-ip \
-        --enable-google-private-path \
         --maintenance-window-day=SUN \
         --maintenance-window-hour=2 \
         --backup-start-time=03:00 \
