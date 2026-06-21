@@ -17,12 +17,8 @@ logging.basicConfig(
 )
 logger = logging.getLogger("ecotrace-api")
 
-# Auto-migrate database tables on server startup (SQLite/development context)
-try:
-    Base.metadata.create_all(bind=engine)
-    logger.info("[Database] initialization completed. Tables mapped successfully.")
-except Exception as e:
-    logger.error(f"[Database] initialization failed: {e}")
+# Auto-migration removed. Use Alembic for migrations instead.
+# To run migrations: `alembic upgrade head`
 
 app = FastAPI(
     title=settings.PROJECT_NAME,

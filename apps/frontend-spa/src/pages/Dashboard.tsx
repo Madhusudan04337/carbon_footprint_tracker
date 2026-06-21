@@ -1,5 +1,44 @@
-
 import { useAnalytics, useLogs } from '../hooks/useTracking.ts';
+
+function calculateStreak(logs: { date: string }[]) {
+  if (!logs || logs.length === 0) return 0;
+  
+  // Extract unique dates sorted descending
+  const dates = Array.from(new Set(logs.map(l => l.date))).sort((a, b) => b.localeCompare(a));
+  
+  if (dates.length === 0) return 0;
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  let currentStreak = 0;
+  let currentDate = today;
+
+  // Check if first date is today or yesterday
+  const firstLogDate = new Date(dates[0]);
+  firstLogDate.setHours(0, 0, 0, 0);
+  const diffDays = Math.floor((today.getTime() - firstLogDate.getTime()) / (1000 * 3600 * 24));
+  
+  if (diffDays > 1) return 0;
+
+  for (let i = 0; i < dates.length; i++) {
+    const logDate = new Date(dates[i]);
+    logDate.setHours(0, 0, 0, 0);
+    
+    // Check if the difference between current expected date and logDate is 0 or 1
+    const expectedDiff = Math.floor((currentDate.getTime() - logDate.getTime()) / (1000 * 3600 * 24));
+    if (expectedDiff === 0 || expectedDiff === 1) {
+      if (expectedDiff === 1 || i === 0) {
+        currentStreak++;
+      }
+      currentDate = logDate;
+    } else {
+      break;
+    }
+  }
+
+  return currentStreak;
+}
 
 export default function Dashboard() {
   const { data: analytics, isLoading: analyticsLoading, error: analyticsError } = useAnalytics();
@@ -33,7 +72,7 @@ export default function Dashboard() {
       </div>
 
       {/* Numerical Stats Widgets */}
-      <section className="grid grid-cols-1 md:grid-cols-3 gap-6" aria-label="Footprint Metrics Overview">
+      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" aria-label="Footprint Metrics Overview">
         <div className="bg-white dark:bg-forest-surface p-6 rounded-2xl border border-emerald-500/10 shadow-sm hover:shadow-md transition-shadow">
           <span className="text-xs uppercase font-bold tracking-wider text-emerald-600 dark:text-emerald-400">Gross Carbon Output</span>
           <h2 className="text-4xl mt-2 font-bold">{analytics?.total_emissions_co2e} <span className="text-sm font-normal text-gray-500 dark:text-gray-400">kg CO2e</span></h2>
@@ -53,6 +92,14 @@ export default function Dashboard() {
           <span className="text-xs uppercase font-bold tracking-wider text-emerald-600 dark:text-emerald-400">Log Submissions</span>
           <h2 className="text-4xl mt-2 font-bold">{analytics?.logs_count}</h2>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">Total distinct habits registered and calculated</p>
+        </div>
+
+        <div className="bg-white dark:bg-forest-surface p-6 rounded-2xl border border-emerald-500/10 shadow-sm hover:shadow-md transition-shadow">
+          <span className="text-xs uppercase font-bold tracking-wider text-orange-600 dark:text-orange-400">Current Streak</span>
+          <h2 className="text-4xl mt-2 font-bold flex items-center gap-2">
+            🔥 {calculateStreak(logs || [])} <span className="text-sm font-normal text-gray-500 dark:text-gray-400">days</span>
+          </h2>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">Consecutive days of logging activity</p>
         </div>
       </section>
 

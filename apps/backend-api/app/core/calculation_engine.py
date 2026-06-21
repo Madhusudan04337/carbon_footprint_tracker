@@ -1,31 +1,15 @@
+import json
+import os
 from typing import Dict, Any, Literal
 import math
 
 # Realistic emission factors standard
-EMISSION_FACTORS = {
-    "transport": {
-        "car": 0.170,        # kg CO2e per km (gasoline baseline)
-        "bike": 0.000,       # Zero direct emissions
-        "bus": 0.080,        # Transit average per passenger-km
-        "train": 0.030,      # Rail transit average per passenger-km
-        "flight": 0.180,      # Average blended short/long haul per passenger-km
-    },
-    "energy": {
-        "electricity": 0.385, # kg CO2e per kWh (US regional grid mix average)
-        "lpg": 1.510,         # kg CO2e per Litre
-        "natural_gas": 2.020, # kg CO2e per cubic meter (m3)
-    },
-    "food": {
-        "vegan": 2.90,        # kg CO2e per person per day
-        "vegetarian": 3.80,   # kg CO2e per person per day
-        "mixed_diet": 5.60,   # kg CO2e per person per day
-        "meat_heavy": 7.20,   # kg CO2e per person per day
-    },
-    "waste": {
-        "recycling": -0.200,  # kg CO2e offset savings per kg of waste recycled
-        "landfill": 0.500,    # kg CO2e emitted per kg of mixed landfilled waste
-    }
-}
+factors_file_path = os.path.join(os.path.dirname(__file__), "emission_factors.json")
+try:
+    with open(factors_file_path, "r") as f:
+        EMISSION_FACTORS = json.load(f)
+except FileNotFoundError:
+    EMISSION_FACTORS = {}
 
 CONFIDENCE_SCORES = {
     "automated": 1.00,

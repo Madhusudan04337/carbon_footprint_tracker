@@ -1,33 +1,28 @@
-import { useState, useEffect } from 'react';
+import { useState, Suspense, lazy } from 'react';
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
-import Dashboard from './pages/Dashboard.tsx';
-import Calculator from './pages/Calculator.tsx';
-import Goals from './pages/Goals.tsx';
-import Recommendations from './pages/Recommendations.tsx';
-import Analytics from './pages/Analytics.tsx';
-import AuthPage from './pages/AuthPage.tsx';
+import { useAuth } from './context/AuthContext.tsx';
+
+// Lazy loading the pages
+const Dashboard = lazy(() => import('./pages/Dashboard.tsx'));
+const Calculator = lazy(() => import('./pages/Calculator.tsx'));
+const Goals = lazy(() => import('./pages/Goals.tsx'));
+const Recommendations = lazy(() => import('./pages/Recommendations.tsx'));
+const Analytics = lazy(() => import('./pages/Analytics.tsx'));
+const AuthPage = lazy(() => import('./pages/AuthPage.tsx'));
+
+// Loading fallback
+const PageLoader = () => (
+  <div className="flex items-center justify-center h-full">
+    <div className="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+  </div>
+);
 
 export default function App() {
   const location = useLocation();
   const [theme, setTheme] = useState<'light' | 'dark'>('dark');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(
-    !!localStorage.getItem('token')
-  );
-
-  // Keep auth state synced on storage changes (multi-tab)
-  useEffect(() => {
-    const onStorage = () => setIsAuthenticated(!!localStorage.getItem('token'));
-    window.addEventListener('storage', onStorage);
-    return () => window.removeEventListener('storage', onStorage);
-  }, []);
-
-  const handleAuthenticated = () => setIsAuthenticated(true);
-
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    setIsAuthenticated(false);
-  };
+  
+  const { isAuthenticated, login, logout } = useAuth();
 
   const toggleTheme = () => {
     const nextTheme = theme === 'light' ? 'dark' : 'light';
@@ -44,7 +39,11 @@ export default function App() {
 
   // Show auth page if not logged in
   if (!isAuthenticated) {
-    return <AuthPage onAuthenticated={handleAuthenticated} />;
+    return (
+      <Suspense fallback={<PageLoader />}>
+        <AuthPage />
+      </Suspense>
+    );
   }
 
   return (
@@ -110,7 +109,7 @@ export default function App() {
             {theme === 'light' ? '🌙 Dark Mode' : '☀️ Light Mode'}
           </button>
           <button
-            onClick={handleLogout}
+            onClick={logout}
             className="w-full p-3 rounded-xl border border-red-500/20 text-sm text-red-400 hover:bg-red-500/10 transition-colors"
           >
             🚪 Sign Out
@@ -172,7 +171,7 @@ export default function App() {
               {theme === 'light' ? '🌙 Dark Mode' : '☀️ Light Mode'}
             </button>
             <button
-              onClick={() => { handleLogout(); setMobileMenuOpen(false); }}
+              onClick={() => { logout(); setMobileMenuOpen(false); }}
               className="flex-1 p-3 rounded-xl border border-red-500/20 text-sm text-red-400 hover:bg-red-500/10 transition-colors"
             >
               🚪 Sign Out
@@ -192,14 +191,16 @@ export default function App() {
         </header>
 
         {/* Dynamic page content */}
-        <main tabIndex={0} aria-label="Main Content Area" className="flex-1 p-4 sm:p-8 overflow-y-auto min-h-0 min-w-0 focus:outline-none">
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/analytics" element={<Analytics />} />
-            <Route path="/calculator" element={<Calculator />} />
-            <Route path="/goals" element={<Goals />} />
-            <Route path="/recommendations" element={<Recommendations />} />
-          </Routes>
+        <main tabIndex={0} aria-label="Main Content Area" className="flex-1 p-4 sm:p-8 overflow-y-auto min-h-0 min-w-0 focus-visible:outline-none">
+          <Suspense fallback={<PageLoader />}>
+            <Routes>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/analytics" element={<Analytics />} />
+              <Route path="/calculator" element={<Calculator />} />
+              <Route path="/goals" element={<Goals />} />
+              <Route path="/recommendations" element={<Recommendations />} />
+            </Routes>
+          </Suspense>
         </main>
       </div>
     </div>

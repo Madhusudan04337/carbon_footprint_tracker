@@ -1,12 +1,10 @@
 import { useState } from 'react';
+import { useAuth } from '../context/AuthContext.tsx';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000/api';
 
-interface AuthPageProps {
-  onAuthenticated: () => void;
-}
-
-export default function AuthPage({ onAuthenticated }: AuthPageProps) {
+export default function AuthPage() {
+  const { login } = useAuth();
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -61,8 +59,7 @@ export default function AuthPage({ onAuthenticated }: AuthPageProps) {
       }
 
       const data = await loginRes.json();
-      localStorage.setItem('token', data.access_token);
-      onAuthenticated();
+      login(data.access_token);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
     } finally {
