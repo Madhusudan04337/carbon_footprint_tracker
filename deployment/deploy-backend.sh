@@ -62,7 +62,7 @@ echo "▶ [2/3] Deploying to Cloud Run..."
         --allow-unauthenticated \
         --add-cloudsql-instances="${CLOUDSQL_INSTANCE}" \
         --set-secrets="DATABASE_URL=ecotrace-db-url:latest,JWT_SECRET_KEY=ecotrace-jwt-secret:latest" \
-        --set-env-vars="ENVIRONMENT=production,PROJECT_NAME=EcoTrace Carbon Footprint API,JWT_ALGORITHM=HS256,ACCESS_TOKEN_EXPIRE_MINUTES=60,LOG_LEVEL=info,WEB_CONCURRENCY=2,PORT=8080,ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-https://ecotrace-frontend-HASH-uc.a.run.app}" \
+        --set-env-vars="ENVIRONMENT=production,PROJECT_NAME=EcoTrace Carbon Footprint API,JWT_ALGORITHM=HS256,ACCESS_TOKEN_EXPIRE_MINUTES=60,LOG_LEVEL=info,WEB_CONCURRENCY=2,ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-https://ecotrace-frontend-HASH-uc.a.run.app}" \
         --cpu=1 \
         --memory=512Mi \
         --cpu-throttling \
