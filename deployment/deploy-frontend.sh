@@ -13,7 +13,7 @@
 
 set -euo pipefail
 
-PROJECT_ID="${GCP_PROJECT_ID:?Set GCP_PROJECT_ID}"
+PROJECT_ID="${GCP_PROJECT_ID:-mystical-surfer-500104-b6}"
 REGION="${GCP_REGION:-asia-south1}"
 AR_REPO="ecotrace-repo"
 SERVICE_NAME="ecotrace-frontend"

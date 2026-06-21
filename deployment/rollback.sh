@@ -18,7 +18,7 @@
 
 set -euo pipefail
 
-PROJECT_ID="${GCP_PROJECT_ID:?Set GCP_PROJECT_ID}"
+PROJECT_ID="${GCP_PROJECT_ID:-mystical-surfer-500104-b6}"
 REGION="${GCP_REGION:-asia-south1}"
 
 SERVICE_TYPE="${1:?Usage: rollback.sh <backend|frontend> [revision-name]}"

@@ -20,7 +20,7 @@ set -euo pipefail
 
 # ── Configuration ─────────────────────────────────────────────────────────────
 # Override any of these with environment variables before running.
-PROJECT_ID="${GCP_PROJECT_ID:?Set GCP_PROJECT_ID}"
+PROJECT_ID="${GCP_PROJECT_ID:-mystical-surfer-500104-b6}"
 REGION="${GCP_REGION:-asia-south1}"          # Mumbai — closest to India
 AR_REPO="ecotrace-repo"                       # Artifact Registry repository name
 CLOUDSQL_INSTANCE="ecotrace-postgres"         # Cloud SQL instance name
@@ -228,7 +228,7 @@ echo "▶ [9/12] Setting up Workload Identity Federation for GitHub Actions..."
 
 POOL_NAME="ecotrace-github-pool"
 PROVIDER_NAME="ecotrace-github-provider"
-GITHUB_REPO="${GITHUB_REPO:-your-org/carbon_footprint_tracker}"  # Override this!
+GITHUB_REPO="${GITHUB_REPO:-Madhusudan04337/carbon_footprint_tracker}"  # User repository
 
 # Create Workload Identity Pool
 if ! gcloud iam workload-identity-pools describe "${POOL_NAME}" \

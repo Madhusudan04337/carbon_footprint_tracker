@@ -13,14 +13,14 @@
 set -euo pipefail
 
 # ── Configuration (all overridable via environment) ──────────────────────────
-PROJECT_ID="${GCP_PROJECT_ID:?Set GCP_PROJECT_ID}"
+PROJECT_ID="${GCP_PROJECT_ID:-mystical-surfer-500104-b6}"
 REGION="${GCP_REGION:-asia-south1}"
 AR_REPO="ecotrace-repo"
 SERVICE_NAME="ecotrace-api"
 IMAGE_TAG="${IMAGE_TAG:-$(git rev-parse --short HEAD 2>/dev/null || echo 'latest')}"
 IMAGE="${REGION}-docker.pkg.dev/${PROJECT_ID}/${AR_REPO}/backend:${IMAGE_TAG}"
 BACKEND_SA="ecotrace-backend-sa@${PROJECT_ID}.iam.gserviceaccount.com"
-CLOUDSQL_INSTANCE="${CLOUDSQL_INSTANCE:?Set CLOUDSQL_INSTANCE (e.g. project:region:name)}"
+CLOUDSQL_INSTANCE="${CLOUDSQL_INSTANCE:-mystical-surfer-500104-b6:asia-south1:ecotrace-postgres}"
 
 echo ""
 echo "🚀 Deploying EcoTrace Backend"
