@@ -134,8 +134,14 @@ steps:
           --timeout=300 \
           --quiet
 
-        echo "Backend deployed: $(gcloud run services describe ecotrace-api \
-          --region=${_REGION} --format='value(status.url)')"
+        BACKEND_URL=$(gcloud run services describe ecotrace-api \
+          --region=${_REGION} --format='value(status.url)')
+        echo "Backend deployed: $$BACKEND_URL"
+        # Grant public access (allUsers) — required for unauthenticated requests
+        gcloud run services add-iam-policy-binding ecotrace-api \
+          --region=${_REGION} \
+          --member=allUsers \
+          --role=roles/run.invoker || true
 
   # ── Step 5: Deploy frontend to Cloud Run ────────────────────────────────────
   - name: "gcr.io/google.com/cloudsdktool/cloud-sdk:slim"
@@ -175,18 +181,21 @@ steps:
       - |
         if [ "${_SERVICE}" = "backend" ]; then
           URL=$(gcloud run services describe ecotrace-api \
+            --region="${_REGION}" --format="value(status.address.url)" 2>/dev/null \
+            || gcloud run services describe ecotrace-api \
             --region="${_REGION}" --format="value(status.url)")
           echo "Verifying backend health: $$URL/"
-          for i in $(seq 1 10); do
+          sleep 10
+          for i in $(seq 1 15); do
             STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$$URL/")
             if [ "$$STATUS" = "200" ]; then
               echo "✅ Backend healthy (HTTP 200)"
               exit 0
             fi
-            echo "   Attempt $$i/10 — HTTP $$STATUS, retrying in 5s..."
+            echo "   Attempt $$i/15 — HTTP $$STATUS, retrying in 5s..."
             sleep 5
           done
-          echo "❌ Backend health check FAILED after 10 attempts"; exit 1
+          echo "❌ Backend health check FAILED after 15 attempts"; exit 1
         fi
 
         if [ "${_SERVICE}" = "frontend" ]; then
