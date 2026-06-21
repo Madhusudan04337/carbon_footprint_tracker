@@ -176,9 +176,9 @@ steps:
         if [ "${_SERVICE}" = "backend" ]; then
           URL=$(gcloud run services describe ecotrace-api \
             --region="${_REGION}" --format="value(status.url)")
-          echo "Verifying backend health: ${URL}/"
+          echo "Verifying backend health: $$URL/"
           for i in $(seq 1 10); do
-            STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${URL}/")
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$$URL/")
             if [ "$$STATUS" = "200" ]; then
               echo "✅ Backend healthy (HTTP 200)"
               exit 0
@@ -192,9 +192,9 @@ steps:
         if [ "${_SERVICE}" = "frontend" ]; then
           URL=$(gcloud run services describe ecotrace-frontend \
             --region="${_REGION}" --format="value(status.url)")
-          echo "Verifying frontend health: ${URL}/health"
+          echo "Verifying frontend health: $$URL/health"
           for i in $(seq 1 10); do
-            STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${URL}/health")
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$$URL/health")
             if [ "$$STATUS" = "200" ]; then
               echo "✅ Frontend healthy (HTTP 200)"
               exit 0
