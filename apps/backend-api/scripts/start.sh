@@ -28,7 +28,7 @@ exec gunicorn app.main:app \
     --workers "${WORKERS}" \
     --bind "0.0.0.0:${PORT:-8000}" \
     --timeout 120 \
-    --keepalive 5 \
+    --keep-alive 5 \
     --log-level "${LOG_LEVEL:-info}" \
     --access-logfile - \
     --error-logfile - \
