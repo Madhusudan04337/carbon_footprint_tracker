@@ -70,7 +70,7 @@ steps:
           --tag="$$CACHE_IMAGE" \
           --cache-from="$$CACHE_IMAGE" \
           --build-arg BUILDKIT_INLINE_CACHE=1 \
-          .
+          apps/backend-api
 
   - name: "gcr.io/cloud-builders/docker"
     id: build-frontend
