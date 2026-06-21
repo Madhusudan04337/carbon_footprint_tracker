@@ -25,3 +25,29 @@ def get_activities(
     current_user: User = Depends(get_current_user)
 ):
     return TrackingService.get_user_logs(db, user_id=current_user.id, skip=skip, limit=limit)
+
+import io
+import csv
+from fastapi.responses import StreamingResponse
+
+@router.get("/export", response_class=StreamingResponse)
+def export_logs_csv(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    logs = TrackingService.get_user_logs(db, user_id=current_user.id, skip=0, limit=10000)
+    
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["Date", "Category", "Sub Category", "Value", "Emissions (kg CO2e)"])
+    
+    for log in logs:
+        writer.writerow([log.date, log.category, log.sub_category, log.value, log.emissions_co2e])
+        
+    output.seek(0)
+    
+    return StreamingResponse(
+        output,
+        media_type="text/csv",
+        headers={"Content-Disposition": f"attachment; filename=ecotrace_logs.csv"}
+    )

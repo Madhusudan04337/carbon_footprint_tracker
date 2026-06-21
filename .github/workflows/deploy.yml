@@ -85,9 +85,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run backend tests
+      - name: Run backend tests and security scan
         working-directory: apps/backend-api
-        run: pytest app/tests/ -v --tb=short
+        run: |
+          pip install bandit
+          bandit -r app/ -ll -q
+          pytest app/tests/ -v --tb=short
         env:
           # Use SQLite for testing — no PostgreSQL needed in CI
           DATABASE_URL: sqlite:///./test.db
@@ -101,8 +104,11 @@ jobs:
           node-version: "20"
           cache: npm
 
-      - name: Install Node dependencies
-        run: npm ci
+      - name: Install Node dependencies & Security Audit
+        working-directory: apps/frontend-spa
+        run: |
+          npm ci
+          npm audit --audit-level=high || true
 
       - name: TypeScript type check
         working-directory: apps/frontend-spa

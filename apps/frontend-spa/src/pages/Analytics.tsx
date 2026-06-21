@@ -139,31 +139,28 @@ export default function Analytics() {
     }
   };
 
-  // 3. CSV Exporter function
-  const handleExportCSV = () => {
-    if (!logs) return;
-    const headers = ['Date', 'Category', 'Sub-Category', 'Value', 'Emissions (kg CO2e)'];
-    const rows = logs.map(l => [
-      l.date,
-      l.category,
-      l.sub_category,
-      l.value,
-      l.emissions_co2e
-    ]);
-
-    const csvContent = [
-      headers.join(','),
-      ...rows.map(row => row.map(val => `"${val}"`).join(','))
-    ].join('\n');
-
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.setAttribute('href', url);
-    link.setAttribute('download', `ecotrace_carbon_logs_${new Date().toISOString().split('T')[0]}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  // 3. CSV Exporter function using Backend
+  const handleExportCSV = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api'}/logs/export`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (!res.ok) throw new Error('Export failed');
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `ecotrace_full_logs_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err) {
+      console.error(err);
+      alert('Failed to export data.');
+    }
   };
 
   return (

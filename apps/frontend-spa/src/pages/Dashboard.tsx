@@ -46,9 +46,31 @@ export default function Dashboard() {
 
   if (analyticsLoading || logsLoading) {
     return (
-      <div className="flex flex-col items-center justify-center h-96 space-y-4" role="status" aria-live="polite">
-        <div className="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
-        <p className="text-gray-500 dark:text-gray-400">Syncing database logs and compiling metrics...</p>
+      <div className="space-y-8 animate-pulse">
+        <div>
+          <div className="h-8 bg-gray-300 dark:bg-gray-700 rounded w-1/3 mb-2"></div>
+          <div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-1/2"></div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="bg-white dark:bg-forest-surface p-6 rounded-2xl border border-emerald-500/10 shadow-sm h-32">
+              <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-1/2 mb-4"></div>
+              <div className="h-8 bg-gray-300 dark:bg-gray-700 rounded w-3/4 mb-2"></div>
+              <div className="h-3 bg-gray-200 dark:bg-gray-800 rounded w-full"></div>
+            </div>
+          ))}
+        </div>
+        <div className="bg-white dark:bg-forest-surface p-6 rounded-2xl border border-emerald-500/10 h-64">
+          <div className="h-6 bg-gray-300 dark:bg-gray-700 rounded w-1/4 mb-6"></div>
+          <div className="space-y-4">
+            {[...Array(3)].map((_, i) => (
+              <div key={i}>
+                <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-1/3 mb-2"></div>
+                <div className="h-3 bg-gray-200 dark:bg-gray-800 rounded w-full"></div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     );
   }

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext.tsx';
+import zxcvbn from 'zxcvbn';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000/api';
 
@@ -210,6 +211,25 @@ export default function AuthPage() {
                 placeholder="••••••••"
                 className="w-full px-4 py-2.5 rounded-xl bg-forest-dark border border-emerald-500/20 text-white placeholder-gray-600 text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50 transition-all"
               />
+              {mode === 'register' && form.password.length > 0 && (
+                <div className="mt-2">
+                  <div className="flex gap-1 h-1.5 mb-1">
+                    {[0, 1, 2, 3].map((level) => (
+                      <div 
+                        key={level} 
+                        className={`flex-1 rounded-full transition-all duration-300 ${
+                          zxcvbn(form.password).score >= level 
+                            ? ['bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-emerald-500', 'bg-emerald-600'][zxcvbn(form.password).score]
+                            : 'bg-gray-700'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  <p className="text-[10px] text-gray-400 text-right">
+                    {['Very Weak', 'Weak', 'Fair', 'Good', 'Strong'][zxcvbn(form.password).score]}
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Error */}
