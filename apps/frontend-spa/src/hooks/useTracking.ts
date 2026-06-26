@@ -66,7 +66,7 @@ export function useLogs() {
   return useQuery<ActivityLog[]>({
     queryKey: ['logs'],
     queryFn: async () => {
-      const res = await apiFetch('/logs');
+      const res = await apiFetch('/logs?limit=10000');
       if (!res.ok) throw new Error('Failed to retrieve logs');
       return res.json();
     }

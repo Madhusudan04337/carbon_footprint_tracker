@@ -22,7 +22,7 @@ export default function App() {
   const [theme, setTheme] = useState<'light' | 'dark'>('dark');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   
-  const { isAuthenticated, login, logout } = useAuth();
+  const { isAuthenticated, logout } = useAuth();
 
   const toggleTheme = () => {
     const nextTheme = theme === 'light' ? 'dark' : 'light';

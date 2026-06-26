@@ -44,3 +44,5 @@ docker/postgres/data/
 playwright-report/
 test-results/
 playwright/.cache/
+coverage/
+

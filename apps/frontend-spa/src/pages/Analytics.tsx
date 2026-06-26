@@ -44,10 +44,12 @@ export default function Analytics() {
   const getFilteredLogs = () => {
     if (!logs) return [];
     const limitDate = new Date();
+    limitDate.setHours(0, 0, 0, 0);
     limitDate.setDate(limitDate.getDate() - Number(timeframe));
     
     return logs.filter(log => {
-      const logDate = new Date(log.date);
+      const [year, month, day] = log.date.split('-').map(Number);
+      const logDate = new Date(year, month - 1, day);
       return logDate >= limitDate;
     }).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   };

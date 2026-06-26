@@ -23,7 +23,7 @@ describe('AuthPage Component', () => {
         <AuthPage />
       </AuthProvider>
     );
-    expect(screen.getByText(/Sign In/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Sign In/i)[0]).toBeInTheDocument();
     expect(screen.getByPlaceholderText(/you@example.com/i)).toBeInTheDocument();
   });
 

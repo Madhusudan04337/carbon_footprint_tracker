@@ -22,6 +22,15 @@ jest.mock('react-chartjs-2', () => ({
 }));
 
 describe('Analytics Page Component', () => {
+  beforeAll(() => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date('2023-10-15'));
+  });
+
+  afterAll(() => {
+    jest.useRealTimers();
+  });
+
   beforeEach(() => {
     jest.clearAllMocks();
   });

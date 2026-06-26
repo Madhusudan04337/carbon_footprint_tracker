@@ -61,21 +61,21 @@ print("🚗 Seeding TRANSPORT logs...")
 
 transport_logs = [
     # gasoline_car: 150 km commute
-    {"category": "transport", "sub_category": "gasoline_car", "value": 150.0, "date": day(25)},
+    {"category": "transport", "sub_category": "gasoline_car", "value": 150.0, "date": day(180)},
     # diesel_car: 200 km road trip
-    {"category": "transport", "sub_category": "diesel_car",   "value": 200.0, "date": day(22)},
+    {"category": "transport", "sub_category": "diesel_car",   "value": 200.0, "date": day(120)},
     # hybrid_car: 120 km weekend drive
-    {"category": "transport", "sub_category": "hybrid_car",   "value": 120.0, "date": day(18)},
+    {"category": "transport", "sub_category": "hybrid_car",   "value": 120.0, "date": day(60)},
     # electric_car: 90 km daily
-    {"category": "transport", "sub_category": "electric_car", "value":  90.0, "date": day(15)},
+    {"category": "transport", "sub_category": "electric_car", "value":  90.0, "date": day(45)},
     # bus commute: 40 km
-    {"category": "transport", "sub_category": "bus",          "value":  40.0, "date": day(12)},
+    {"category": "transport", "sub_category": "bus",          "value":  40.0, "date": day(25)},
     # train: 320 km intercity
-    {"category": "transport", "sub_category": "train",        "value": 320.0, "date": day(10)},
+    {"category": "transport", "sub_category": "train",        "value": 320.0, "date": day(15)},
     # short-haul flight: 800 km
     {"category": "transport", "sub_category": "flight_short", "value": 800.0, "date": day(7)},
     # long-haul flight: 6000 km international
-    {"category": "transport", "sub_category": "flight_long",  "value": 6000.0,"date": day(5)},
+    {"category": "transport", "sub_category": "flight_long",  "value": 6000.0,"date": day(3)},
 ]
 
 for log in transport_logs:
@@ -88,15 +88,15 @@ print("\n🍔 Seeding DIET logs...")
 
 diet_logs = [
     # vegan: 7 days
-    {"category": "diet", "sub_category": "vegan",        "value":  7.0, "date": day(28)},
+    {"category": "diet", "sub_category": "vegan",        "value":  7.0, "date": day(150)},
     # vegetarian: 5 days
-    {"category": "diet", "sub_category": "vegetarian",   "value":  5.0, "date": day(21)},
+    {"category": "diet", "sub_category": "vegetarian",   "value":  5.0, "date": day(90)},
     # pescatarian: 4 days
-    {"category": "diet", "sub_category": "pescatarian",  "value":  4.0, "date": day(14)},
+    {"category": "diet", "sub_category": "pescatarian",  "value":  4.0, "date": day(40)},
     # low_meat: 6 days
-    {"category": "diet", "sub_category": "low_meat",     "value":  6.0, "date": day(9)},
+    {"category": "diet", "sub_category": "low_meat",     "value":  6.0, "date": day(12)},
     # high_meat: 3 days
-    {"category": "diet", "sub_category": "high_meat",    "value":  3.0, "date": day(3)},
+    {"category": "diet", "sub_category": "high_meat",    "value":  3.0, "date": day(4)},
 ]
 
 for log in diet_logs:
@@ -109,11 +109,11 @@ print("\n⚡ Seeding ENERGY logs...")
 
 energy_logs = [
     # us_average grid: 450 kWh monthly bill
-    {"category": "energy", "sub_category": "us_average",  "value": 450.0, "date": day(30)},
+    {"category": "energy", "sub_category": "us_average",  "value": 450.0, "date": day(270)},
     # clean renewable mix: 300 kWh solar
-    {"category": "energy", "sub_category": "clean_mix",   "value": 300.0, "date": day(20)},
+    {"category": "energy", "sub_category": "clean_mix",   "value": 300.0, "date": day(80)},
     # coal-heavy grid: 380 kWh heavy winter use
-    {"category": "energy", "sub_category": "coal_heavy",  "value": 380.0, "date": day(13)},
+    {"category": "energy", "sub_category": "coal_heavy",  "value": 380.0, "date": day(15)},
     # another us_average month
     {"category": "energy", "sub_category": "us_average",  "value": 510.0, "date": day(2)},
 ]
