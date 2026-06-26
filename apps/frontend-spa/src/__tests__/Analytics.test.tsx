@@ -64,4 +64,35 @@ describe('Analytics Page Component', () => {
       expect(screen.getByText('energy')).toBeInTheDocument();
     });
   });
+
+  test('filters logs correctly by timeframe', async () => {
+    render(<Analytics />);
+    
+    // By default, 30 Days is selected.
+    // Toggle table to verify both logs are shown initially.
+    const toggleButton = screen.getByRole('button', { name: /Show Screen-Reader Tabular Data Table/i });
+    fireEvent.click(toggleButton);
+    
+    expect(screen.getByText('transport')).toBeInTheDocument();
+    expect(screen.getByText('energy')).toBeInTheDocument();
+    
+    // Click '7 Days' button.
+    const sevenDaysButton = screen.getByRole('role' in screen ? 'button' : 'button', { name: '7 Days' });
+    fireEvent.click(sevenDaysButton);
+    
+    // Both mock logs are dated 2023-10-01 and 2023-10-02 (fake system time is 2023-10-15).
+    // They are > 7 days ago, so they should be filtered out.
+    expect(screen.queryByText('transport')).not.toBeInTheDocument();
+    expect(screen.queryByText('energy')).not.toBeInTheDocument();
+    expect(screen.getByText('No activity recorded in this window')).toBeInTheDocument();
+    
+    // Click 'Year' button.
+    const yearButton = screen.getByRole('button', { name: 'Year' });
+    fireEvent.click(yearButton);
+    
+    // Both logs should be visible again.
+    expect(screen.getByText('transport')).toBeInTheDocument();
+    expect(screen.getByText('energy')).toBeInTheDocument();
+  });
 });
+
